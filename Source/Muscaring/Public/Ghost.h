@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
+#include "AIController.h"
+#include "Components/ArrowComponent.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Ghost.generated.h"
-
 UCLASS()
-class MUSCARING_API AGhost : public AActor
+class MUSCARING_API AGhost : public AAIController
 {
 	GENERATED_BODY()
 	
@@ -28,7 +28,10 @@ public:
 	UPROPERTY(EditAnyWhere)
 		TObjectPtr<USceneComponent> DefaultSceneRoot;
 	//Skeltal Mesh‚ð’Ç‰Á
-UPROPERTY(EditAnyWhere)
+    UPROPERTY(EditAnyWhere)
 		TObjectPtr<USkeletalMeshComponent> SkeletalMesh;
+    //arrow component‚ð’Ç‰Á
+    UPROPERTY(VisibleAnyWhere)
+		TObjectPtr<UArrowComponent> ArrowComponent;
     
 };
