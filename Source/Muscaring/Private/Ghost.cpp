@@ -2,7 +2,8 @@
 
 
 #include "Ghost.h"
-
+#include <BehaviorTree/BlackboardComponent.h>
+#include <Kismet/GameplayStatics.h>
 // Sets default values
 AGhost::AGhost()
 {
@@ -20,7 +21,21 @@ AGhost::AGhost()
 
 	//SkeltalMeshComponentをRootComponentにAttach
 	SkeletalMesh->SetupAttachment(RootComponent);
-	
+	//ArrowComponentの作成
+	ArrowComponent = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
+
+	//ArrowComponentの位置を設定
+    ArrowComponent->SetRelativeLocation(FVector(0.0f, 0.0f, -90.0f));
+
+	//ArrowComponentをSkeltalMeshComponentにAttach
+    ArrowComponent->SetupAttachment(SkeletalMesh);
+	//blackboardにプレイヤーをtargetとして登録
+	auto player = GetBlackboardComponent();
+	if(player)
+	{
+		player->SetValueAsObject(TEXT("target"),UGameplayStatics::GetPlayerPawn(this,0));
+	}
+
 }
 
 // Called when the game starts or when spawned
