@@ -14,12 +14,13 @@ class MUSCARING_API ABreakableActor : public AGeometryCollectionActor
 {
 	GENERATED_BODY()
 protected:
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-public:
 	static TArray<ABreakableActor*> breakableActors;
 
+public:
+	
 	UFUNCTION(BlueprintPure)
 	TArray<ABreakableActor*> GetActors();
 };
