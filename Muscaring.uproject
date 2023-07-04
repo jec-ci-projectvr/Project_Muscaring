@@ -32,6 +32,10 @@
 				"Android",
 				"HoloLens"
 			]
+		},
+		{
+			"Name": "FieldSystemPlugin",
+			"Enabled": true
 		}
 	]
 }
