@@ -4,13 +4,23 @@
 #include "BreakableActor.h"
 
 TArray<ABreakableActor*> ABreakableActor::breakableActors;
+TArray<UGeometryCollectionComponent*> ABreakableActor::geometryCollectionComponents;
+
 void ABreakableActor::BeginPlay()
 {
+	//最初のフレームで自分自身とコンポーネントをスタティック配列に追加する
+	breakableActors.Add(this);
+	geometryCollectionComponents.Add(GetComponentByClass<UGeometryCollectionComponent>());
+
 	Super::BeginPlay();
-	ABreakableActor::breakableActors.Add(this);	
 }
 
-TArray<ABreakableActor*> ABreakableActor::GetActors()
+TArray<ABreakableActor*> ABreakableActor::GetBreakableActors() 
 {
 	return breakableActors;
+}
+
+TArray<UGeometryCollectionComponent*> ABreakableActor::GetGeometryCollectionComponents()
+{
+	return geometryCollectionComponents;
 }
