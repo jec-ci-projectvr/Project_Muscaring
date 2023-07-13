@@ -10,10 +10,20 @@ UCLASS()
 class MUSCARING_API ANormalGhost : public ACharacter
 {
 	GENERATED_BODY()
-
 public:
 	// Sets default values for this character's properties
-	ANormalGhost();
+	ANormalGhost()
+		:state(GhostState::Idle)
+		, onSeeOnce(false)
+		, minimumDist(10000.f)
+		, scarePoint(0)
+		, player(nullptr)
+		, restArea(nullptr)
+		, defaultMoveSpeed(60.f)
+        , escapeMoveSpeedSpeed(90.f)
+	{
+
+	};
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,8 +35,21 @@ public:
 
 	//éãäEÇÃîÕàÕÇê›íËÇ∑ÇÈ
 public:
-	UPROPERTY(VisibleAnyWhere, Category = "AI")
+	UPROPERTY(EditAnyWhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
 	UFUNCTION()
 		void OnSeePlayer(APawn* Pawn);
+	int scarePoint;
+	enum class GhostState
+	{
+		Idle,Approach,Scare,Escape,Swoon
+	};
+	TObjectPtr<AActor> restArea;
+    GhostState state;
+	float minimumDist;
+	//pawnÇÃÉ|ÉCÉìÉ^
+    TObjectPtr<APawn> player;
+	bool onSeeOnce;
+	const float defaultMoveSpeed;
+	const float escapeMoveSpeedSpeed;
 };
