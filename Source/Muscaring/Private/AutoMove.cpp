@@ -23,7 +23,7 @@ void UAutoMove::BeginPlay()
 	TArray<AActor*> actors;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMovePoint::StaticClass(), actors);
 
-	//全てのMovePointを取得
+	//自分をターゲットとしている全てのMovePointを取得
 	for (auto a : actors)
 	{
 		AMovePoint* movePoint = Cast<AMovePoint>(a);
@@ -45,10 +45,11 @@ void UAutoMove::BeginPlay()
 	//OnArrivalPointにイベントを登録
 	for (auto p : movePoints)
 	{
-		p->OnPointArrival.AddDynamic(this, &UAutoMove::PoinArrival);
+		p->OnPointArrival.AddDynamic(this, &UAutoMove::PointArrival);
+		p->OnPointDeparture.AddDynamic(this, &UAutoMove::PointDeparture);
 	}
 
-	for (const auto p : movePoints) {
+	for (auto p : movePoints) {
 		p->targetDistination = distination;
 	}
 
@@ -72,22 +73,28 @@ void UAutoMove::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	// ...
 }
 
-void UAutoMove::PoinArrival(AMovePoint* point, AMovePoint* next)
+void UAutoMove::PointArrival(AMovePoint* point)
+{
+	if (point->waitPoint) {
+		isMoving = false;
+	}
+}
+
+void UAutoMove::PointDeparture(AMovePoint* point, AMovePoint* next)
 {
 	if (next != nullptr)
 	{
+		isMoving = true;
 		distination = next;
 		for (auto p : movePoints){
 			p->targetDistination = next;
-		}
-
-		if (point->waitPoint) {
-			isMoving = false;
 		}
 	}
 	else
 	{
 		isMoving = false;
 	}
+
+	movePoints.Remove(point);
 }
 

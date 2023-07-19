@@ -17,12 +17,25 @@ void ABreakableActor::BeginPlay()
 	breakableActors.Add(this);
 	geometryCollectionComponents.Add(g);
 
+	world = GEngine->GameViewport->GetWorld();
+
 	Super::BeginPlay();
 }
 
 void ABreakableActor::Break(const FChaosBreakEvent& breakEvent)
 {
+	world->GetTimerManager().SetTimer(timerHandle, this, &ABreakableActor::DestroyActor, destroyCount, false, destroyCount);
 	isBreaked = true;
+}
+
+bool ABreakableActor::IsResumeTrigger_Implementation()
+{
+	return CheckBreaked();
+}
+
+void ABreakableActor::DestroyActor()
+{
+	this->Destroy();
 }
 
 bool ABreakableActor::CheckBreaked()

@@ -15,6 +15,11 @@ class MUSCARING_API UAutoMove : public UActorComponent
 {
 	GENERATED_BODY()
 
+	bool isMoving;
+	TObjectPtr<AActor> parentActor;
+	TArray<TObjectPtr<AMovePoint>> movePoints;
+	TObjectPtr<AMovePoint> distination;
+
 public:	
 	// Sets default values for this component's properties
 	UAutoMove();
@@ -23,15 +28,11 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	bool isMoving;
-	TObjectPtr<AActor> parentActor;
-
-	TArray<TObjectPtr<AMovePoint>> movePoints;
-
-	TObjectPtr<AMovePoint> distination;
+	UFUNCTION()
+	void PointArrival(AMovePoint* point);
 
 	UFUNCTION()
-	void PoinArrival(AMovePoint* point, AMovePoint* next);
+	void PointDeparture(AMovePoint* point, AMovePoint* next);
 
 public:	
 	// Called every frame
