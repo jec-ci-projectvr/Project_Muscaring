@@ -3,28 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InterfaceGhostState.h"
+#include "Enum_GhostState.h"
 #include "GameFramework/Character.h"
 #include "NormalGhost.generated.h"
-
 UCLASS()
 class MUSCARING_API ANormalGhost : public ACharacter
 {
 	GENERATED_BODY()
+		
 public:
 	// Sets default values for this character's properties
-	ANormalGhost()
-		:state(GhostState::Idle)
-		, onSeeOnce(false)
-		, minimumDist(10000.f)
-		, scarePoint(0)
-		, player(nullptr)
-		, restArea(nullptr)
-		, defaultMoveSpeed(60.f)
-        , escapeMoveSpeedSpeed(90.f)
-	{
-
-	};
-
+	ANormalGhost();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,23 +23,51 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
+
 	//視界の範囲を設定する
 public:
 	UPROPERTY(EditAnyWhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
 	UFUNCTION()
 		void OnSeePlayer(APawn* Pawn);
-	int scarePoint;
-	enum class GhostState
-	{
-		Idle,Approach,Scare,Escape,Swoon
-	};
-	TObjectPtr<AActor> restArea;
-    GhostState state;
+
+	//scarePointに応じてstateを変更する
+	UFUNCTION()
+	virtual void ChangeState();
+	virtual void ChangeMoveSpeed();
+private:
+	UPROPERTY(EditAnyWhere)
+	uint32 scarePoint;
+
+	UPROPERTY(EditAnyWhere)
+	GhostState state;
+
+	UPROPERTY()
+	TObjectPtr<ARestArea> restArea;//restAreaのポインタ
+
+	//targetとの最短距離
+	UPROPERTY(EditAnyWhere)
 	float minimumDist;
+
 	//pawnのポインタ
     TObjectPtr<APawn> player;
+
+	//NormalGhostAIのポインタ
+    TObjectPtr<class ANormalGhostAI> normalGhostAI;
+
+
+	//一度のみ視界に入ったかどうか
+	UPROPERTY()
 	bool onSeeOnce;
-	const float defaultMoveSpeed;
-	const float escapeMoveSpeedSpeed;
+
+	UPROPERTY(EditAnyWhere)
+	float defaultMoveSpeed=60.f;
+
+	UPROPERTY(EditAnyWhere)
+	float escapeMoveSpeed=90.f;
+
+	//プレイヤーにヒットした際にtrueになる
+	UPROPERTY()
+	bool hitPlayer;
 };

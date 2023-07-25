@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "NormalGhost.h"
+#include "Enum_GhostState.h"
+//#include "NormalGhost.h"
 #include "RestArea.h"
 #include "InterfaceGhostState.generated.h"
 // This class does not need to be modified.
@@ -23,7 +24,11 @@ class MUSCARING_API IInterfaceGhostState
 
 		// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	virtual ANormalGhost::GhostState SendGhostState(ANormalGhost::GhostState state);
-	virtual ARestArea& SendMostNearRestArea(TObjectPtr<ARestArea> restArea);
-	virtual bool SendHitInfo(bool hit);
+	//‰¼ŽÀ‘•
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "GhostState")
+		void SetGhostState(GhostState state);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "GhostState")
+		void SetMostNearRestArea(ARestArea* restArea);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "GhostState")
+		void SetHitInfo(bool hit);
 };

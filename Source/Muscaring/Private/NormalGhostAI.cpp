@@ -2,10 +2,13 @@
 
 #include "NormalGhostAI.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 //コンストラクタ
 ANormalGhostAI::ANormalGhostAI(const class FObjectInitializer& ObjectInitializer)
 {
+	//AIControllerを作成
 	this->BehaviorTreeComp = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviorTreeComp"));
 	this->BlackboardComp = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
 
@@ -15,13 +18,21 @@ ANormalGhostAI::ANormalGhostAI(const class FObjectInitializer& ObjectInitializer
 	{
 		BehaviorTree = BT.Object;
 	}
-
-	this->TargetKey = "Target";
+	TargetKey = "Target";
+	SelfActorKey = "SelfActor";
+    GhostStateKey = "GhostState";
+	RestAreaKey = "RestArea";
+	HitKey = "Hit";
 }
 //BeginPlay
 void ANormalGhostAI::BeginPlay()
 {
 	Super::BeginPlay();
+}
+//Tick
+void ANormalGhostAI::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
 }
 //AIのpawnを保持
 void ANormalGhostAI::OnPossess(APawn* InPawn)
@@ -55,5 +66,25 @@ ANormalGhostAI* ANormalGhostAI::GetPlayerKey() const
 
 	//blackboardのTargetというKeyにプレイヤーのpawnを設定
 	return Cast<ANormalGhostAI>(this->BlackboardComp->GetValueAsObject(this->TargetKey));
+}
+void ANormalGhostAI::SetGhost(ANormalGhost* ghost)
+{
+	ensure(this->BlackboardComp);
+	BlackboardComp->SetValueAsObject(SelfActorKey, ghost);
+}
+void ANormalGhostAI::SetGhostState_Implementation(GhostState state)
+{
+	ensure(this->BlackboardComp);
+	BlackboardComp->SetValueAsEnum(GhostStateKey,(uint8)state);
+}
+void ANormalGhostAI::SetMostNearRestArea_Implementation(ARestArea* restArea)
+{
+	ensure(this->BlackboardComp);
+	BlackboardComp->SetValueAsObject(RestAreaKey, restArea);
+}
+void ANormalGhostAI::SetHitInfo_Implementation(bool hit)
+{
+	ensure(this->BlackboardComp);
+	BlackboardComp->SetValueAsBool(HitKey, hit);
 }
 
