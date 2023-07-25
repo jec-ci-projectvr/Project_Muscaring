@@ -41,8 +41,9 @@ void ANormalGhostAI::OnPossess(APawn* InPawn)
 	//Pawnを所持したらBehaviorTreeとBlackboardを使用
 	if (BehaviorTree != nullptr)
 	{
+		//BehaviorTreeComp->StartTree(*BehaviorTree);
+		RunBehaviorTree(BehaviorTree);
 		BlackboardComp->InitializeBlackboard(*(BehaviorTree->BlackboardAsset));
-		BehaviorTreeComp->StartTree(*BehaviorTree);
 	}
 }
 //AIのpawnを解除
@@ -67,11 +68,7 @@ ANormalGhostAI* ANormalGhostAI::GetPlayerKey() const
 	//blackboardのTargetというKeyにプレイヤーのpawnを設定
 	return Cast<ANormalGhostAI>(this->BlackboardComp->GetValueAsObject(this->TargetKey));
 }
-void ANormalGhostAI::SetGhost(ANormalGhost* ghost)
-{
-	ensure(this->BlackboardComp);
-	BlackboardComp->SetValueAsObject(SelfActorKey, ghost);
-}
+
 void ANormalGhostAI::SetGhostState_Implementation(GhostState state)
 {
 	ensure(this->BlackboardComp);
@@ -85,6 +82,6 @@ void ANormalGhostAI::SetMostNearRestArea_Implementation(ARestArea* restArea)
 void ANormalGhostAI::SetHitInfo_Implementation(bool hit)
 {
 	ensure(this->BlackboardComp);
-	BlackboardComp->SetValueAsBool(HitKey, hit);
+	BlackboardComp->SetValueAsBool(HitKey, true);
 }
 

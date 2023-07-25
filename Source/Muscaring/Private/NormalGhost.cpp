@@ -28,13 +28,6 @@ ANormalGhost::ANormalGhost()
 
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 
-	player=UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	//プレイヤー
-	if (normalGhostAI && player)
-	{
-		//プレイヤー情報を設定
-		normalGhostAI->SetPlayerKey(player);
-	}
 	//視野
 	PawnSensingComp->SetPeripheralVisionAngle(60.0f);
 	//視野の距離
@@ -50,25 +43,40 @@ void ANormalGhost::BeginPlay()
 {
 	Super::BeginPlay();
 	//AIコントローラーを設定
-	normalGhostAI = Cast<ANormalGhostAI>(GetController());
+	{
+		normalGhostAI = Cast<ANormalGhostAI>(GetController());
+	}
+	//プレイヤーの設定
+	{
+		player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+		//プレイヤー
+		if (normalGhostAI && player)
+		{
+			//プレイヤー情報を設定
+			normalGhostAI->SetPlayerKey(player);
+		}
+	}
 	//レベル上に存在する特定のアクターを全て取得
-	//TArray<AActor*> restAreas;
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARestArea::StaticClass(), restAreas);
-//レストエリアの数だけループ
-	//for (auto& loop : restAreas)
-	//{
-	//	//レストエリアの位置を取得
-	//	FVector restAreaLocation = loop->GetActorLocation();
-	//	//自身との距離を計測
-	//	if(minimumDist>FVector::Distance(GetActorLocation(),restAreaLocation))
- //       {
-	//		//最小距離を更新
-	//		minimumDist = FVector::Distance(GetActorLocation(), restAreaLocation);
-	//		//Actorとして取得しているため、キャストして変換
-	//		restArea = Cast<ARestArea>(loop);
-	//	}
-	//}
-	//IInterfaceGhostState::Execute_SetMostNearRestArea(this, restArea);
+	{
+		TArray<AActor*> restAreas;
+		FVector restAreaLocation;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARestArea::StaticClass(), restAreas);
+		//レストエリアの数だけループ
+		for (TObjectPtr<AActor> loop : restAreas)
+		{
+			//レストエリアの位置を取得
+			restAreaLocation = loop->GetActorLocation();
+			//自身との距離を計測
+			if (minimumDist > FVector::Distance(GetActorLocation(), restAreaLocation))
+			{
+				//最小距離を更新
+				minimumDist = FVector::Distance(GetActorLocation(), restAreaLocation);
+				//Actorとして取得しているため、キャストして変換
+				restArea = Cast<ARestArea>(loop);
+			}
+		}
+		IInterfaceGhostState::Execute_SetMostNearRestArea(normalGhostAI, restArea);
+	}
 }
 
 // Called every frame
@@ -76,11 +84,11 @@ void ANormalGhost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-
-void ANormalGhost::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
+void ANormalGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
-	IInterfaceGhostState::Execute_SetHitInfo(this, hitPlayer);
+	Super::NotifyActorBeginOverlap(OtherActor);
+	//OtherActorがプレイヤーだったらinterfaceを実行(playerの判定が無効であるため一時的に条件を無しに)
+	IInterfaceGhostState::Execute_SetHitInfo(normalGhostAI, true);
 }
 //動的デリゲートで呼び出す関数
 //プレイヤーを見つけた時に一度だけ呼び出す
@@ -89,13 +97,10 @@ void ANormalGhost::OnSeePlayer(APawn* Pawn)
 	//プレイヤーを見つけた時に一度だけ呼び出す
 	if (!onSeeOnce)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), "see");
-		scarePoint+=80;
-		//state=GhostState::Approach;
+		scarePoint+=10;
 		ChangeState();
 		ChangeMoveSpeed();
-		//normalGhostAI->SetGhostState_Implementation(state);
-		IInterfaceGhostState::Execute_SetGhostState(this, state);
+		IInterfaceGhostState::Execute_SetGhostState(normalGhostAI, state);
 		onSeeOnce = true;
 	}
 }
@@ -106,22 +111,18 @@ void ANormalGhost::ChangeState()
 	if(scarePoint<30)
 	{
 		state = GhostState::Approach;
-		UKismetSystemLibrary::PrintString(GetWorld(), "app");
 	}
 	else if(scarePoint<60)
 	{
 		state = GhostState::Scare;
-		UKismetSystemLibrary::PrintString(GetWorld(),"scare");
 	}
 	else if (scarePoint<100)
 	{
 		state = GhostState::Escape;
-		UKismetSystemLibrary::PrintString(GetWorld(),"esc");
 	}
 	else if (scarePoint >= 100)
 	{
 		state = GhostState::Swoon;
-		UKismetSystemLibrary::PrintString(GetWorld(), "swo");
 	}
 }
 //状態によって移動速度を変化させる

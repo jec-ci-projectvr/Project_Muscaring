@@ -24,8 +24,6 @@ public:
 	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComp;
 	//blackboardComponentのポインタ
 	TObjectPtr<UBlackboardComponent> BlackboardComp;
-	//Ghostのセッター
-	void SetGhost(ANormalGhost* ghost);
 
 	//ターゲットのキー
 	UPROPERTY(EditDefaultsOnly, Category = "AI")

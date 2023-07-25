@@ -23,8 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit) override;
-
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	//‹ŠE‚Ì”ÍˆÍ‚ğİ’è‚·‚é
 public:
 	UPROPERTY(EditAnyWhere, Category = "AI")
