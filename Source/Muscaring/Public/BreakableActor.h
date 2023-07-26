@@ -47,6 +47,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	static TArray<UGeometryCollectionComponent*> GetGeometryCollectionComponents(); //すべてのジオメトリコレクションの取得
 
-	virtual bool IsResumeTrigger_Implementation() override;
+	bool IsResumeTrigger_Implementation() override;
 
 };
