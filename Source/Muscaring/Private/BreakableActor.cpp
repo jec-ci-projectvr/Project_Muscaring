@@ -8,11 +8,39 @@ TArray<UGeometryCollectionComponent*> ABreakableActor::geometryCollectionCompone
 
 void ABreakableActor::BeginPlay()
 {
+	isBreaked = false;
+
+	auto g = this->GetComponentByClass<UGeometryCollectionComponent>();
+	g->OnChaosBreakEvent.AddDynamic(this, &ABreakableActor::Break);
+
 	//最初のフレームで自分自身とコンポーネントをスタティック配列に追加する
 	breakableActors.Add(this);
-	geometryCollectionComponents.Add(GetComponentByClass<UGeometryCollectionComponent>());
+	geometryCollectionComponents.Add(g);
+
+	world = GEngine->GameViewport->GetWorld();
 
 	Super::BeginPlay();
+}
+
+void ABreakableActor::Break(const FChaosBreakEvent& breakEvent)
+{
+	world->GetTimerManager().SetTimer(timerHandle, this, &ABreakableActor::DestroyActor, destroyCount, false, destroyCount);
+	isBreaked = true;
+}
+
+bool ABreakableActor::IsResumeTrigger_Implementation()
+{
+	return CheckBreaked();
+}
+
+void ABreakableActor::DestroyActor()
+{
+	this->Destroy();
+}
+
+bool ABreakableActor::CheckBreaked()
+{
+	return isBreaked;
 }
 
 TArray<ABreakableActor*> ABreakableActor::GetBreakableActors() 
