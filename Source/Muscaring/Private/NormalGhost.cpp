@@ -15,12 +15,14 @@
 
 // Sets default values
 ANormalGhost::ANormalGhost()
-	:state(GhostState::Idle)
-	, onSeeOnce(false)
+	:state_(GhostState::Idle)
+	, onSeeOnce_(false)
 	, minimumDist(10000.f)
-	, scarePoint(0)
+	, scarePoint_(0)
 	, player(nullptr)
 	, restArea(nullptr)
+	, defaultMoveSpeed_(60.f)
+	, escapeMoveSpeed_(90.f)
 {
 
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -58,23 +60,8 @@ void ANormalGhost::BeginPlay()
 	}
 	//レベル上に存在する特定のアクターを全て取得
 	{
-		TArray<AActor*> restAreas;
-		FVector restAreaLocation;
-		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARestArea::StaticClass(), restAreas);
-		//レストエリアの数だけループ
-		for (TObjectPtr<AActor> loop : restAreas)
-		{
-			//レストエリアの位置を取得
-			restAreaLocation = loop->GetActorLocation();
-			//自身との距離を計測
-			if (minimumDist > FVector::Distance(GetActorLocation(), restAreaLocation))
-			{
-				//最小距離を更新
-				minimumDist = FVector::Distance(GetActorLocation(), restAreaLocation);
-				//Actorとして取得しているため、キャストして変換
-				restArea = Cast<ARestArea>(loop);
-			}
-		}
+		
+		SettingMostNearRestArea();
 		IInterfaceGhostState::Execute_SetMostNearRestArea(normalGhostAI, restArea);
 	}
 }
@@ -95,57 +82,103 @@ void ANormalGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 void ANormalGhost::OnSeePlayer(APawn* Pawn)
 {
 	//プレイヤーを見つけた時に一度だけ呼び出す
-	if (!onSeeOnce)
+	if (!onSeeOnce_)
 	{
-		scarePoint+=10;
+		scarePoint_+=10;
 		ChangeState();
 		ChangeMoveSpeed();
-		IInterfaceGhostState::Execute_SetGhostState(normalGhostAI, state);
-		onSeeOnce = true;
+		IInterfaceGhostState::Execute_SetGhostState(normalGhostAI, state_);
+		onSeeOnce_ = true;
 	}
 }
 
+//defaultMoveSpeedのsetter
+void ANormalGhost::SetDefaultMoveSpeed(const float speed)
+{
+	defaultMoveSpeed_ = speed;
+}
+//defaultMoveSpeedのgetter
+float ANormalGhost::GetDefaultMoveSpeed() const
+{
+	return defaultMoveSpeed_;
+}
+//escapeMoveSpeedのsetter
+void ANormalGhost::SetEscapeMoveSpeed(const float speed)
+{
+	escapeMoveSpeed_ = speed;
+}
+//escapeMoveSpeedのgetter
+float ANormalGhost::GetEscapeMoveSpeed() const
+{
+	return escapeMoveSpeed_;
+}
+//scarePointのsetter
+void ANormalGhost::SetScarePoint(const uint32 scarePoint)
+{
+	scarePoint_ = scarePoint;
+}
 //恐怖値に応じて状態を変更する
 void ANormalGhost::ChangeState()
 {
-	if(scarePoint<30)
+	if(scarePoint_<30)
 	{
-		state = GhostState::Approach;
+		state_ = GhostState::Approach;
 	}
-	else if(scarePoint<60)
+	else if(scarePoint_<60)
 	{
-		state = GhostState::Scare;
+		state_ = GhostState::Scare;
 	}
-	else if (scarePoint<100)
+	else if (scarePoint_<100)
 	{
-		state = GhostState::Escape;
+		state_ = GhostState::Escape;
 	}
-	else if (scarePoint >= 100)
+	else if (scarePoint_ >= 100)
 	{
-		state = GhostState::Swoon;
+		state_ = GhostState::Swoon;
 	}
 }
 //状態によって移動速度を変化させる
 void ANormalGhost::ChangeMoveSpeed()
 {
-	switch (state)
+	switch (state_)
 	{
 	case GhostState::Idle:
 		GetCharacterMovement()->MaxWalkSpeed = 0.f;
 		break;
 	case GhostState::Approach:
-		GetCharacterMovement()->MaxWalkSpeed = defaultMoveSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = defaultMoveSpeed_;
 		break;
 	case GhostState::Scare:
-		GetCharacterMovement()->MaxWalkSpeed = defaultMoveSpeed / 2;
+		GetCharacterMovement()->MaxWalkSpeed = defaultMoveSpeed_ / 2;
 		break;
 	case GhostState::Escape:
-		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
 		break;
 	case GhostState::Swoon:
 		GetCharacterMovement()->MaxWalkSpeed = 0.f;
 		break;
 	default:
 		break;
+	}
+}
+
+void ANormalGhost::SettingMostNearRestArea()
+{
+	TArray<AActor*> restAreas;
+	FVector restAreaLocation;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARestArea::StaticClass(), restAreas);
+	//レストエリアの数だけループ
+	for (TObjectPtr<AActor> loop : restAreas)
+	{
+		//レストエリアの位置を取得
+		restAreaLocation = loop->GetActorLocation();
+		//自身との距離を計測
+		if (minimumDist > FVector::Distance(GetActorLocation(), restAreaLocation))
+		{
+			//最小距離を更新
+			minimumDist = FVector::Distance(GetActorLocation(), restAreaLocation);
+			//Actorとして取得しているため、キャストして変換
+			restArea = Cast<ARestArea>(loop);
+		}
 	}
 }

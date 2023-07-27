@@ -29,18 +29,38 @@ public:
 	UPROPERTY(EditAnyWhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
 	UFUNCTION()
-		void OnSeePlayer(APawn* Pawn);
+		virtual void OnSeePlayer(APawn* Pawn);
 
 	//scarePointに応じてstateを変更する
 	UFUNCTION()
 	virtual void ChangeState();
+	UFUNCTION()
 	virtual void ChangeMoveSpeed();
+UFUNCTION()
+void SetDefaultMoveSpeed(const float speed);
+	//escapeMoveSpeedのgetter
+	UFUNCTION()
+float GetDefaultMoveSpeed() const;
+//escapeMoveSpeedのsetter
+	UFUNCTION()
+void SetEscapeMoveSpeed(const float speed);
+//escapeMoveSpeedのgetter
+	UFUNCTION()
+float GetEscapeMoveSpeed() const;
+
+//scarePointのgetter
+UFUNCTION()
+uint32 GetScarePoint() const;
+//scarePointのsetter
+UFUNCTION()
+void SetScarePoint(const uint32 scarePoint);
+	void SettingMostNearRestArea();
 private:
 	UPROPERTY(EditAnyWhere)
-	uint32 scarePoint;
+	uint32 scarePoint_;
 
 	UPROPERTY(EditAnyWhere)
-	GhostState state;
+	GhostState state_;
 
 	UPROPERTY()
 	TObjectPtr<ARestArea> restArea;//restAreaのポインタ
@@ -58,15 +78,13 @@ private:
 
 	//一度のみ視界に入ったかどうか
 	UPROPERTY()
-	bool onSeeOnce;
+	bool onSeeOnce_;
 
 	UPROPERTY(EditAnyWhere)
-	float defaultMoveSpeed=60.f;
+	float defaultMoveSpeed_;
 
 	UPROPERTY(EditAnyWhere)
-	float escapeMoveSpeed=90.f;
+	float escapeMoveSpeed_;
 
-	//プレイヤーにヒットした際にtrueになる
-	UPROPERTY()
-	bool hitPlayer;
+	
 };
