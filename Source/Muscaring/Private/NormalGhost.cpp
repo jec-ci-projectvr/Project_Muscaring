@@ -11,6 +11,7 @@
 #include "RestArea.h"
 #include "Enum_GhostState.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BreakableActor.h"
 #include "InterfaceGhostState.h"
 
 // Sets default values
@@ -35,7 +36,11 @@ ANormalGhost::ANormalGhost()
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &ANormalGhost::OnSeePlayer);
 
 	//player側のイベントに関数をバインド
-	//未実装
+	/*for(const auto& i: ABreakableActor::GetBreakableActors())
+	{
+		auto geometry = i->GetComponentByClass<UGeometryCollectionComponent>();
+		geometry->OnChaosBreakEvent.AddDynamic(this, &ANormalGhost::BrokenActor);
+	}*/
 }
 
 // Called when the game starts or when spawned
@@ -97,7 +102,7 @@ void ANormalGhost::OnSeePlayer(APawn* Pawn)
 	//プレイヤーを見つけた時に一度だけ呼び出す
 	if (!onSeeOnce)
 	{
-		scarePoint+=10;
+		scarePoint+=1;
 		ChangeState();
 		ChangeMoveSpeed();
 		IInterfaceGhostState::Execute_SetGhostState(normalGhostAI, state);
@@ -148,4 +153,12 @@ void ANormalGhost::ChangeMoveSpeed()
 	default:
 		break;
 	}
+}
+
+void ANormalGhost::BrokenActor(const FChaosBreakEvent& breakEvent)
+{
+	scarePoint += 10;
+	ChangeState();
+	ChangeMoveSpeed();
+	IInterfaceGhostState::Execute_SetGhostState(normalGhostAI, state);
 }

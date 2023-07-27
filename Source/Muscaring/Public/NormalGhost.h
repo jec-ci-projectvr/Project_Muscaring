@@ -35,6 +35,9 @@ public:
 	UFUNCTION()
 	virtual void ChangeState();
 	virtual void ChangeMoveSpeed();
+
+	UFUNCTION()
+		virtual void BrokenActor(const FChaosBreakEvent& breakEvent);
 private:
 	UPROPERTY(EditAnyWhere)
 	uint32 scarePoint;

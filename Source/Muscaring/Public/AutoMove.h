@@ -7,6 +7,8 @@
 #include "MovePoint.h"
 #include "Moveable.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "AIController.h"
+#include "Blueprint/AIBlueprintHelperLibrary.h"
 #include "AutoMove.generated.h"
 
 
@@ -17,6 +19,7 @@ class MUSCARING_API UAutoMove : public UActorComponent
 
 	bool isMoving;
 	TObjectPtr<AActor> parentActor;
+	TObjectPtr<AController> controller;
 	TArray<TObjectPtr<AMovePoint>> movePoints;
 	TObjectPtr<AMovePoint> distination;
 
@@ -33,10 +36,5 @@ protected:
 
 	UFUNCTION()
 	void PointDeparture(AMovePoint* point, AMovePoint* next);
-
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
 		
 };
