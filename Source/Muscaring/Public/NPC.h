@@ -3,19 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "RestArea.generated.h"
-
+#include "GameFramework/Character.h"
+#include "NPC.generated.h"
 
 UCLASS()
-class MUSCARING_API ARestArea : public AActor
+class MUSCARING_API ANPC : public ACharacter
 {
 	GENERATED_BODY()
 
-	
-public:	
-	// Sets default values for this actor's properties
-	ARestArea();
+public:
+	// Sets default values for this character's properties
+	ANPC();
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,6 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//overlap begin function
-	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 };
