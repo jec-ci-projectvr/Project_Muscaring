@@ -2,6 +2,7 @@
 
 
 #include "RestArea.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ARestArea::ARestArea()
@@ -24,4 +25,11 @@ void ARestArea::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
+void ARestArea::NotifyActorBeginOverlap(AActor* OtherActor)
+{
+	Super::NotifyActorBeginOverlap(OtherActor);
+	if (OtherActor == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
+	{
 
+	}
+}
