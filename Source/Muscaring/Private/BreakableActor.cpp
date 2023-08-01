@@ -9,7 +9,6 @@ TArray<UGeometryCollectionComponent*> ABreakableActor::geometryCollectionCompone
 void ABreakableActor::BeginPlay()
 {
 	isBreaked = false;
-
 	auto g = this->GetComponentByClass<UGeometryCollectionComponent>();
 	g->OnChaosBreakEvent.AddDynamic(this, &ABreakableActor::Break);
 

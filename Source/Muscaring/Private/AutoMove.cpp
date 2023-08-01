@@ -45,32 +45,21 @@ void UAutoMove::BeginPlay()
 	//OnArrivalPoint‚ÉƒCƒxƒ“ƒg‚ð“o˜^
 	for (auto p : movePoints)
 	{
-		p->OnPointArrival.AddDynamic(this, &UAutoMove::PointArrival);
-		p->OnPointDeparture.AddDynamic(this, &UAutoMove::PointDeparture);
+		p->OnPointArrival.AddUObject(this, &UAutoMove::PointArrival);
+		p->OnPointDeparture.AddUObject(this, &UAutoMove::PointDeparture);
 	}
 
 	for (auto p : movePoints) {
 		p->targetDistination = distination;
 	}
 
+	//Pawn‚©‚çAIController‚ðŽæ“¾
+	controller = Cast<APawn>(parentActor)->GetController();
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller, distination->GetActorLocation());
+	
 	Super::BeginPlay();
-
 	// ...
 	
-}
-
-
-// Called every frame
-void UAutoMove::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	if(distination == nullptr) return;
-	if (!isMoving) return;
-
-	FVector direction =  distination->GetActorLocation() - parentActor->GetActorLocation();
-	IMoveable::Execute_Move(parentActor, direction);
-
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	// ...
 }
 
 void UAutoMove::PointArrival(AMovePoint* point)
@@ -95,6 +84,7 @@ void UAutoMove::PointDeparture(AMovePoint* point, AMovePoint* next)
 		isMoving = false;
 	}
 
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller, distination->GetActorLocation());
 	movePoints.Remove(point);
 }
 

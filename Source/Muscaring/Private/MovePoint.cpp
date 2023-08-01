@@ -24,7 +24,7 @@ AMovePoint::AMovePoint()
 
 	staticMesh->SetupAttachment(RootComponent);
 
-	arrivalDistance = 10.0f;
+	arrivalDistance = 100.0f;
 }
 
 // Called when the game starts or when spawned
@@ -48,7 +48,7 @@ void AMovePoint::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (targetDistination != this) return;
-	if (GetHorizontalDistanceTo(targetActor) > arrivalDistance) return;
+	if (GetDistanceTo(targetActor) > arrivalDistance) return;
 	
 	OnPointArrival.Broadcast(this);
 

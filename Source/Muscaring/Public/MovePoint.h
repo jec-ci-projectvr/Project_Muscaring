@@ -8,8 +8,8 @@
 #include "MoveResumeTrigger.h"
 #include "MovePoint.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPointArrival, AMovePoint*, point);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnPointDeparture, AMovePoint*, point, AMovePoint*, next);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPointArrival, AMovePoint*);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPointDeparture, AMovePoint*, AMovePoint*);
 
 UCLASS()
 class MUSCARING_API AMovePoint : public AActor
@@ -65,10 +65,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(BlueprintAssignable)
 	FOnPointArrival OnPointArrival;
 
-	UPROPERTY(BlueprintAssignable)
 	FOnPointDeparture OnPointDeparture;
 
 };
