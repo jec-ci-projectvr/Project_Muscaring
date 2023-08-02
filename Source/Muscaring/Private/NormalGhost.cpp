@@ -6,46 +6,84 @@
 
 #include "Muscaring/Muscaring.h"
 #include "Muscaring/Public/NormalGhostAI.h"
+#include "Muscaring/Public/NormalGhost.h"
+#include <Kismet/GameplayStatics.h>
+#include "RestArea.h"
+#include "Enum_GhostState.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "InterfaceGhostState.h"
+
 // Sets default values
 ANormalGhost::ANormalGhost()
+	:AGhost()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
-
-	//視野
-	PawnSensingComp->SetPeripheralVisionAngle(60.0f);
-	//視野の距離
-	PawnSensingComp->SightRadius = 2000.0f;
-	PawnSensingComp->OnSeePawn.AddDynamic(this, &ANormalGhost::OnSeePlayer);
 }
 
 // Called when the game starts or when spawned
 void ANormalGhost::BeginPlay()
 {
+	//AIコントローラーを設定
+	{
+		SetGhostAI(Cast<ANormalGhostAI>(GetController()));
+	}
 	Super::BeginPlay();
-
 }
 
 // Called every frame
 void ANormalGhost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
-
-void ANormalGhost::OnSeePlayer(APawn* Pawn)
+void ANormalGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	ANormalGhostAI* AIController = Cast<ANormalGhostAI>(GetController());
-	//プレイヤー
-	APawn* Player = Pawn;
-	if (AIController && Player)
-	{
-		//プレイヤー情報を設定
-		AIController->SetPlayerKey(Player);
-	}
-	//視野に入ったらSeeと表示
-	UKismetSystemLibrary::PrintString(this, TEXT("See"));
+	Super::NotifyActorBeginOverlap(OtherActor);
 }
 
+
+
+//恐怖値に応じて状態を変更する
+void ANormalGhost::ChangeState()
+{
+	if(GetScarePoint()<30)
+	{
+		SetState(GhostState::Approach);
+	}
+	else if(GetScarePoint()<60)
+	{
+		SetState(GhostState::Scare);
+	}
+	else if (GetScarePoint()<100)
+	{
+		SetState(GhostState::Escape);
+	}
+	else if (GetScarePoint() >= 100)
+	{
+		SetState(GhostState::Swoon);
+	}
+}
+//状態によって移動速度を変化させる
+void ANormalGhost::ChangeMoveSpeed()
+{
+	switch (GetState())
+	{
+	case GhostState::Idle:
+		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		break;
+	case GhostState::Approach:
+		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed();
+		break;
+	case GhostState::Scare:
+		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed() * 0.8f;
+		break;
+	case GhostState::Escape:
+		GetCharacterMovement()->MaxWalkSpeed = GetEscapeMoveSpeed();
+		break;
+	case GhostState::Swoon:
+		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		break;
+	default:
+		break;
+	}
+}

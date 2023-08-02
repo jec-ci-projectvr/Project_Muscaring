@@ -3,18 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InterfaceGhostState.h"
+#include "Enum_GhostState.h"
 #include "GameFramework/Character.h"
+#include "Ghost.h"
 #include "NormalGhost.generated.h"
-
 UCLASS()
-class MUSCARING_API ANormalGhost : public ACharacter
+class MUSCARING_API ANormalGhost : public AGhost
 {
 	GENERATED_BODY()
-
+		
 public:
 	// Sets default values for this character's properties
 	ANormalGhost();
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -23,10 +24,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	//éãäEÇÃîÕàÕÇê›íËÇ∑ÇÈ
 public:
-	UPROPERTY(VisibleAnyWhere, Category = "AI")
+	/*UPROPERTY(EditAnyWhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
 	UFUNCTION()
-		void OnSeePlayer(APawn* Pawn);
+		virtual void OnSeePlayer(APawn* Pawn);*/
+
+	//scarePointÇ…âûÇ∂ÇƒstateÇïœçXÇ∑ÇÈ
+	UFUNCTION()
+	virtual void ChangeState() override;
+	UFUNCTION()
+	virtual void ChangeMoveSpeed() override;
 };
