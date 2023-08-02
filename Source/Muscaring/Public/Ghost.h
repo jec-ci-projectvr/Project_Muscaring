@@ -56,8 +56,10 @@ public:
 	//scarePointのsetter
 	UFUNCTION()
 		void SetScarePoint(const uint32 scarePoint);
+//最も近いrestAreaを設定する
 	UFUNCTION()
 	void SettingMostNearRestArea();
+	//二番目に近いrestAreaを設定する
 	//stateのsetter
 	UFUNCTION()
 		void SetState(const GhostState state);
@@ -66,10 +68,17 @@ public:
 		GhostState GetState()const;
 //restAreaのgetter
 	UFUNCTION()
-	ARestArea* GetRestArea() const;
+	ARestArea* GetMostNearRestArea() const;
 	//restAreaのsetter
 	UFUNCTION()
-		void SetRestArea(ARestArea* restArea);
+		void SetMostNearRestArea(ARestArea* restArea);
+//secondNearRestAreaのgetter
+    UFUNCTION()
+        ARestArea* GetSecondNearRestArea() const;
+//secondNearRestAreaのsetter
+    UFUNCTION()
+		void SetSecondNearRestArea(ARestArea* restArea);
+
 	//targetとの最短距離のgetter
 	UFUNCTION()
 		float GetMinimumDist() const;
@@ -103,7 +112,10 @@ private:
 		GhostState state_;
 
 	UPROPERTY()
-		TObjectPtr<ARestArea> restArea_;//restAreaのポインタ
+		TObjectPtr<ARestArea> mostNearrestArea_;//restAreaのポインタ
+
+	UPROPERTY()
+		TObjectPtr<ARestArea> secondNearRestArea_;//二番目に近いrestAreaのポインタ
 
 	//targetとの最短距離
 	UPROPERTY(EditAnyWhere)

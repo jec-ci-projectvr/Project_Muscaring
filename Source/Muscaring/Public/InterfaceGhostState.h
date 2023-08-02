@@ -31,4 +31,6 @@ public:
 		void SetMostNearRestArea(ARestArea* restArea);
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "GhostState")
 		void SetHitInfo(bool hit);
+    UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "GhostState")
+		void SetSecondNearRestArea(ARestArea* restArea);
 };
