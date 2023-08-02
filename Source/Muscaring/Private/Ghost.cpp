@@ -16,7 +16,7 @@ AGhost::AGhost()
 	, minimumDist_(10000.f)
 	, scarePoint_(0)
 	, player_(nullptr)
-	, restArea_(nullptr)
+	, mostNearrestArea_(nullptr)
 	, defaultMoveSpeed_(60.f)
 	, escapeMoveSpeed_(90.f)
 {
@@ -56,7 +56,8 @@ void AGhost::BeginPlay()
 	{
 
 		SettingMostNearRestArea();
-		IInterfaceGhostState::Execute_SetMostNearRestArea(ghostAI_, restArea_);
+		IInterfaceGhostState::Execute_SetMostNearRestArea(ghostAI_, mostNearrestArea_);
+		IInterfaceGhostState::Execute_SetSecondNearRestArea(ghostAI_, secondNearRestArea_);
 	}
 }
 
@@ -139,15 +140,26 @@ APawn* AGhost::GetPlayer() const
 	return player_;
 }
 //restAreaのsetter
-void AGhost::SetRestArea(ARestArea* restArea)
+void AGhost::SetMostNearRestArea(ARestArea* restArea)
 {
-  restArea_ = restArea;		
+  mostNearrestArea_ = restArea;		
 }
 //restAreaのgetter
-ARestArea* AGhost::GetRestArea() const
+ARestArea* AGhost::GetMostNearRestArea() const
 {
-	return restArea_;
+	return mostNearrestArea_;
 }
+//secondNearrestAreaのsetter
+void AGhost::SetSecondNearRestArea(ARestArea* restArea)
+{
+	secondNearRestArea_ = restArea;
+}
+//secondNearrestAreaのgetter
+ARestArea* AGhost::GetSecondNearRestArea() const
+{
+	return secondNearRestArea_;
+}
+
 //ghostAIのsetter
 void AGhost::SetGhostAI(AGhostAI* ghostAI)
 {
@@ -223,7 +235,7 @@ void AGhost::ChangeMoveSpeed()
 		break;
 	}
 }
-
+//一番近いレストエリアと二番目に近いレストエリアを設定する
 void AGhost::SettingMostNearRestArea()
 {
 	TArray<AActor*> restAreas;
@@ -239,8 +251,10 @@ void AGhost::SettingMostNearRestArea()
 		{
 			//最小距離を更新
 			minimumDist_ = FVector::Distance(GetActorLocation(), restAreaLocation);
+            //二番目に近いレストエリアを更新
+			secondNearRestArea_ = mostNearrestArea_;
 			//Actorとして取得しているため、キャストして変換
-			restArea_ = Cast<ARestArea>(loop);
+			mostNearrestArea_ = Cast<ARestArea>(loop);
 		}
 	}
 }

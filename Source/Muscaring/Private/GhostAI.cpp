@@ -1,13 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "GhostAI.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "GhostAI.h"
 
 //コンストラクタ
 AGhostAI::AGhostAI(const class FObjectInitializer& ObjectInitializer)
-	:targetKey_("Target"), selfActorKey_("SelfActor"), ghostStateKey_("GhostState"), restAreaKey_("RestArea"), hitKey_("Hit")
+	:targetKey_("Target"), selfActorKey_("SelfActor"), ghostStateKey_("GhostState")
+	,mostNearRestAreaKey_("RestArea"),secondNearRestAreaKey_("SecondRestArea"), hitKey_("Hit")
 {
 	//AIControllerを作成
 	this->behaviorTreeComp_ = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviorTreeComp"));
@@ -68,10 +69,15 @@ void AGhostAI::SetGhostState_Implementation(GhostState state)
 void AGhostAI::SetMostNearRestArea_Implementation(ARestArea* restArea)
 {
 	ensure(this->blackboardComp_);
-	blackboardComp_->SetValueAsObject(restAreaKey_, restArea);
+	blackboardComp_->SetValueAsObject(mostNearRestAreaKey_, restArea);
 }
 void AGhostAI::SetHitInfo_Implementation(bool hit)
 {
 	ensure(this->blackboardComp_);
 	blackboardComp_->SetValueAsBool(hitKey_, true);
+}
+void AGhostAI::SetSecondNearRestArea_Implementation(ARestArea* restArea)
+{
+	ensure(this->blackboardComp_);
+	blackboardComp_->SetValueAsObject(secondNearRestAreaKey_, restArea);
 }

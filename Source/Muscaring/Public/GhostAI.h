@@ -26,6 +26,7 @@ public:
 	void SetGhostState_Implementation(GhostState state) override;
 	void SetMostNearRestArea_Implementation(ARestArea* restArea) override;
 	void SetHitInfo_Implementation(bool hit) override;
+    void SetSecondNearRestArea_Implementation(ARestArea* restArea) override;
 	//blackboardのキーを設定する
 	UFUNCTION()
 	void SetPlayerKey(APawn* InPawn);
@@ -44,7 +45,10 @@ private:
 		FName selfActorKey_;
 	//最も近い休憩所を保持するキー
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-		FName restAreaKey_;
+		FName mostNearRestAreaKey_;
+	//二番目に近い休憩所を保持するキー
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+	FName secondNearRestAreaKey_;
 	//オバケの状態のキー
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		FName ghostStateKey_;
