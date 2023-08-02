@@ -7,6 +7,7 @@
 #include "Enum_GhostState.h"
 #include "GameFramework/Character.h"
 #include "Ghost.h"
+#include "PlayerActionEvent.h"
 #include "NormalGhost.generated.h"
 UCLASS()
 class MUSCARING_API ANormalGhost : public AGhost
@@ -37,4 +38,9 @@ public:
 	virtual void ChangeState() override;
 	UFUNCTION()
 	virtual void ChangeMoveSpeed() override;
+	virtual void ListenSnapFingers() override;
+	virtual void ListenFakeOut() override;
+
+	UPROPERTY()
+	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
 };
