@@ -22,6 +22,8 @@ ANormalGhostAI::ANormalGhostAI(const class FObjectInitializer& ObjectInitializer
 void ANormalGhostAI::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
+
 }
 //Tick
 void ANormalGhostAI::Tick(float DeltaSeconds)

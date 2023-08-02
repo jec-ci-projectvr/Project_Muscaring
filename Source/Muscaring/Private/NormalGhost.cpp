@@ -11,6 +11,7 @@
 #include "RestArea.h"
 #include "Enum_GhostState.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "PlayerActionEvent.h"
 #include "InterfaceGhostState.h"
 
 // Sets default values
@@ -29,6 +30,15 @@ void ANormalGhost::BeginPlay()
 		SetGhostAI(Cast<ANormalGhostAI>(GetController()));
 	}
 	Super::BeginPlay();
+	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
+
+	if (PlayerActionEvent == nullptr) 
+	{
+		UE_LOG(LogTemp, Error, TEXT("PlayerActionEvent is nullptr"));
+		return;
+	}
+	PlayerActionEvent->OnSnapFingers.AddDynamic(this, &ANormalGhost::ListenSnapFingers);
+	PlayerActionEvent->OnFakeOut.AddDynamic(this, &ANormalGhost::ListenFakeOut);
 }
 
 // Called every frame
@@ -62,6 +72,9 @@ void ANormalGhost::ChangeState()
 	{
 		SetState(GhostState::Swoon);
 	}
+	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
+	//åªç›ÇÃscarePointÇï\é¶
+    //UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
 }
 //èÛë‘Ç…ÇÊÇ¡Çƒà⁄ìÆë¨ìxÇïœâªÇ≥ÇπÇÈ
 void ANormalGhost::ChangeMoveSpeed()
@@ -86,4 +99,17 @@ void ANormalGhost::ChangeMoveSpeed()
 	default:
 		break;
 	}
+}
+void ANormalGhost::ListenSnapFingers()
+{
+	SetScarePoint(GetScarePoint() + 3);
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+	ChangeState();
+	ChangeMoveSpeed();
+}
+void ANormalGhost::ListenFakeOut()
+{
+	SetScarePoint(GetScarePoint() + 10);
+	ChangeState();
+	ChangeMoveSpeed();
 }
