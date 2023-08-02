@@ -55,8 +55,9 @@ void UAutoMove::BeginPlay()
 
 	//Pawn‚©‚çAIController‚ðŽæ“¾
 	controller = Cast<APawn>(parentActor)->GetController();
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller, distination->GetActorLocation());
-	
+	if (controller != nullptr && distination != nullptr) {
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller, distination->GetActorLocation());
+	}
 	Super::BeginPlay();
 	// ...
 	

@@ -24,6 +24,8 @@ AMovePoint::AMovePoint()
 
 	staticMesh->SetupAttachment(RootComponent);
 
+	staticMesh->SetCanEverAffectNavigation(false);
+
 	arrivalDistance = 100.0f;
 }
 
