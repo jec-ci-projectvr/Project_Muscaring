@@ -26,4 +26,6 @@ private:
 
 	//Tick
 	virtual void Tick(float DeltaSeconds) override;
+
+	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
 };
