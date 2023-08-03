@@ -34,8 +34,6 @@ void AMovePoint::BeginPlay()
 {
 	if (!displayMesh) staticMesh->DestroyComponent();
 
-	resumeTrigger = Cast<IMoveResumeTrigger>(resumeTriggerObject);
-
 	if (targetActor == nullptr)
 	{
 		targetActor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -56,8 +54,6 @@ void AMovePoint::Tick(float DeltaTime)
 
 	if (waitPoint)
 	{
-		if (resumeTrigger == nullptr) return;
-
 		if (IMoveResumeTrigger::Execute_IsResumeTrigger(resumeTriggerObject))
 		{
 			waitPoint = false;
