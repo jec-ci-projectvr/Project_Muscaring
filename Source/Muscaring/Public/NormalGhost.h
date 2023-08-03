@@ -40,6 +40,7 @@ public:
 	virtual void ChangeMoveSpeed() override;
 	virtual void ListenSnapFingers() override;
 	virtual void ListenFakeOut() override;
+	virtual void StepOnRestArea() override;
 
 	UPROPERTY()
 	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;

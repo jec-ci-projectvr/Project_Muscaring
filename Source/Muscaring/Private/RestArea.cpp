@@ -15,21 +15,30 @@ ARestArea::ARestArea()
 // Called when the game starts or when spawned
 void ARestArea::BeginPlay()
 {
-	Super::BeginPlay();
-	
+	//©g‚ª”jŠü‚³‚ê‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚éƒCƒxƒ“ƒg‚ğ“o˜^
 }
 
+void ARestArea::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	//onRestAreaDelegate.Broadcast();
+}
+void ARestArea::Destroyed()
+{
+	//onRestAreaDelegate.Broadcast();
+}
 // Called every frame
 void ARestArea::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
 
 }
 void ARestArea::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	Super::NotifyActorBeginOverlap(OtherActor);
 	if (OtherActor == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 	{
-
+		if (onRestAreaDelegate.IsBound())
+		{
+			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("StepOn"));
+		}
+		Destroy();
 	}
 }

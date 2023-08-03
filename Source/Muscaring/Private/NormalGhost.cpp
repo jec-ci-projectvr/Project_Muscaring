@@ -34,11 +34,12 @@ void ANormalGhost::BeginPlay()
 
 	if (PlayerActionEvent == nullptr) 
 	{
-		UE_LOG(LogTemp, Error, TEXT("PlayerActionEvent is nullptr"));
-		return;
+		UKismetSystemLibrary::PrintString(GetWorld(), "not found event");
 	}
 	PlayerActionEvent->OnSnapFingers.AddDynamic(this, &ANormalGhost::ListenSnapFingers);
 	PlayerActionEvent->OnFakeOut.AddDynamic(this, &ANormalGhost::ListenFakeOut);
+	GetMostNearRestArea()->onRestAreaDelegate.AddDynamic(this, &ANormalGhost::StepOnRestArea);
+	
 }
 
 // Called every frame
@@ -110,6 +111,11 @@ void ANormalGhost::ListenSnapFingers()
 void ANormalGhost::ListenFakeOut()
 {
 	SetScarePoint(GetScarePoint() + 10);
+	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
 	ChangeState();
 	ChangeMoveSpeed();
+}
+void ANormalGhost::StepOnRestArea()
+{
+	SettingMostNearRestArea();
 }

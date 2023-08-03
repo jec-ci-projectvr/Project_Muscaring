@@ -38,6 +38,8 @@ public:
 		virtual void ListenSnapFingers();
 	UFUNCTION()
 		virtual void ListenFakeOut();
+UFUNCTION()
+    virtual void StepOnRestArea();
 	//scarePointに応じてstateを変更する
 	
 		virtual void ChangeState();
@@ -83,13 +85,6 @@ public:
 //secondNearRestAreaのsetter
     UFUNCTION()
 		void SetSecondNearRestArea(ARestArea* restArea);
-
-	//targetとの最短距離のgetter
-	UFUNCTION()
-		float GetMinimumDist() const;
-	//targetとの最短距離のsetter
-	UFUNCTION()
-		void SetMinimumDist(const float dist);
 	//targetのgetter
 	UFUNCTION()
 		APawn* GetPlayer() const;
@@ -117,14 +112,11 @@ private:
 		GhostState state_;
 
 	UPROPERTY()
-		TObjectPtr<ARestArea> mostNearrestArea_;//restAreaのポインタ
+		TObjectPtr<ARestArea> mostNearRestArea_;//restAreaのポインタ
 
 	UPROPERTY()
 		TObjectPtr<ARestArea> secondNearRestArea_;//二番目に近いrestAreaのポインタ
 
-	//targetとの最短距離
-	UPROPERTY(EditAnyWhere)
-		float minimumDist_;
 
 	//pawnのポインタ
 	TObjectPtr<APawn> player_;

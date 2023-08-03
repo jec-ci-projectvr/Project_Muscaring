@@ -13,10 +13,9 @@
 AGhost::AGhost()
 	:state_(GhostState::Idle)
 	, onSeeOnce_(false)
-	, minimumDist_(10000.f)
 	, scarePoint_(0)
 	, player_(nullptr)
-	, mostNearrestArea_(nullptr)
+	, mostNearRestArea_(nullptr)
 	, defaultMoveSpeed_(60.f)
 	, escapeMoveSpeed_(90.f)
 {
@@ -30,7 +29,6 @@ AGhost::AGhost()
 	//視野の距離
 	PawnSensingComp->SightRadius = 2000.0f;
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AGhost::OnSeePlayer);
-	
 	//player側のイベントに関数をバインド
 	
 }
@@ -58,8 +56,10 @@ void AGhost::BeginPlay()
 	{
 
 		SettingMostNearRestArea();
-		IInterfaceGhostState::Execute_SetMostNearRestArea(ghostAI_, mostNearrestArea_);
+		IInterfaceGhostState::Execute_SetMostNearRestArea(ghostAI_, mostNearRestArea_);
 		IInterfaceGhostState::Execute_SetSecondNearRestArea(ghostAI_, secondNearRestArea_);
+
+		//mostNearrestArea_->onRestAreaDelegate.AddDynamic(this, &AGhost::StepOnRestArea);
 	}
 }
 
@@ -97,11 +97,17 @@ void AGhost::ListenSnapFingers()
 
 	scarePoint_ += 3;
 }
+//猫だましイベントで呼び出す
 void AGhost::ListenFakeOut()
 {
 	//聞こえる範囲であれば実行
 
 	scarePoint_ += 10;
+}
+//プレイヤーがrestAreaを踏んだ時に呼び出す
+void AGhost::StepOnRestArea()
+{
+	SettingMostNearRestArea();
 }
 //defaultMoveSpeedのsetter
 void AGhost::SetDefaultMoveSpeed(const float speed)
@@ -156,12 +162,12 @@ APawn* AGhost::GetPlayer() const
 //restAreaのsetter
 void AGhost::SetMostNearRestArea(ARestArea* restArea)
 {
-  mostNearrestArea_ = restArea;		
+  mostNearRestArea_ = restArea;		
 }
 //restAreaのgetter
 ARestArea* AGhost::GetMostNearRestArea() const
 {
-	return mostNearrestArea_;
+	return mostNearRestArea_;
 }
 //secondNearrestAreaのsetter
 void AGhost::SetSecondNearRestArea(ARestArea* restArea)
@@ -183,16 +189,6 @@ void AGhost::SetGhostAI(AGhostAI* ghostAI)
 AGhostAI* AGhost::GetGhostAI() const
 {
 	return ghostAI_;
-}
-//minimumDistのsetter
-void AGhost::SetMinimumDist(const float minimumDist)
-{
-	minimumDist_ = minimumDist;
-}
-//minimumDistのgetter
-float AGhost::GetMinimumDist() const
-{
-	return minimumDist_;
 }
 //onSeeOnceのsetter
 void AGhost::SetOnSeeOnce(const bool onSeeOnce)
@@ -254,6 +250,7 @@ void AGhost::SettingMostNearRestArea()
 {
 	TArray<AActor*> restAreas;
 	FVector restAreaLocation;
+	float minimumDist = 100000.f;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARestArea::StaticClass(), restAreas);
 	//レストエリアの数だけループ
 	for (TObjectPtr<AActor> loop : restAreas)
@@ -261,14 +258,32 @@ void AGhost::SettingMostNearRestArea()
 		//レストエリアの位置を取得
 		restAreaLocation = loop->GetActorLocation();
 		//自身との距離を計測
-		if (minimumDist_ > FVector::Distance(GetActorLocation(), restAreaLocation))
+		if (minimumDist > FVector::Distance(GetActorLocation(), restAreaLocation))
 		{
 			//最小距離を更新
-			minimumDist_ = FVector::Distance(GetActorLocation(), restAreaLocation);
-            //二番目に近いレストエリアを更新
-			secondNearRestArea_ = mostNearrestArea_;
+			minimumDist = FVector::Distance(GetActorLocation(), restAreaLocation);
 			//Actorとして取得しているため、キャストして変換
-			mostNearrestArea_ = Cast<ARestArea>(loop);
+			mostNearRestArea_ = Cast<ARestArea>(loop);
+		}
+	}
+	//二番目に近いレストエリアを設定
+	minimumDist= 100000.f;
+	for (TObjectPtr<AActor> loop : restAreas)
+	{
+		//レストエリアの位置を取得
+		restAreaLocation = loop->GetActorLocation();
+		//一番近いレストエリアと同じものは除外
+		if(mostNearRestArea_==loop)
+		{
+			UKismetSystemLibrary::PrintString(GetWorld(), "exclusive");
+			continue;
+		}
+		else if (minimumDist > FVector::Distance(GetActorLocation(), restAreaLocation))//自身との距離を計測
+		{
+			//最小距離を更新
+			minimumDist = FVector::Distance(GetActorLocation(), restAreaLocation);
+			//Actorとして取得しているため、キャストして変換
+			secondNearRestArea_ = Cast<ARestArea>(loop);
 		}
 	}
 }
