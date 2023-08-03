@@ -6,6 +6,7 @@
 #include "NPC.h"
 #include "RestArea.h"
 #include "Enum_GhostState.h"
+#include "PlayerActionEvent.h"
 #include "Ghost.generated.h"
 
 /**
@@ -33,6 +34,10 @@ public:
 	UFUNCTION()
 		virtual void OnSeePlayer(APawn* Pawn);
 
+	UFUNCTION()
+		virtual void ListenSnapFingers();
+	UFUNCTION()
+		virtual void ListenFakeOut();
 	//scarePoint‚É‰‚¶‚Ästate‚ğ•ÏX‚·‚é
 	
 		virtual void ChangeState();
@@ -137,4 +142,7 @@ private:
 
 	UPROPERTY(EditAnyWhere)
 		float escapeMoveSpeed_;
+
+UPROPERTY(EditAnyWhere)
+	TObjectPtr<UPlayerActionEvent> playerActionEvent_;
 };

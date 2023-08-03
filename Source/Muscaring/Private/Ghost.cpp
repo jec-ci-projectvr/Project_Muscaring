@@ -9,7 +9,7 @@
 #include "NormalGhostAI.h"
 #include "Enum_GhostState.h"
 #include "RestArea.h"
-
+#include "PlayerActionEvent.h"
 AGhost::AGhost()
 	:state_(GhostState::Idle)
 	, onSeeOnce_(false)
@@ -30,14 +30,16 @@ AGhost::AGhost()
 	//視野の距離
 	PawnSensingComp->SightRadius = 2000.0f;
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AGhost::OnSeePlayer);
-
+	
 	//player側のイベントに関数をバインド
-	//未実装
+	
 }
 // Called when the game starts or when spawned
 void AGhost::BeginPlay()
 {
 	Super::BeginPlay();
+	/*playerActionEvent_->OnSnapFingers.AddDynamic(this, &AGhost::ListenSnapFingers);
+	playerActionEvent_->OnFakeOut.AddDynamic(this, &AGhost::ListenFakeOut);*/
 	////AIコントローラーを設定
 	//{
 	//	ghostAI_ = Cast<ANormalGhostAI>(GetController());
@@ -88,7 +90,19 @@ void AGhost::OnSeePlayer(APawn* Pawn)
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("see"));
 	}
 }
+//指ポキイベントで呼び出す
+void AGhost::ListenSnapFingers()
+{
+	//聞こえる範囲であれば実行
 
+	scarePoint_ += 3;
+}
+void AGhost::ListenFakeOut()
+{
+	//聞こえる範囲であれば実行
+
+	scarePoint_ += 10;
+}
 //defaultMoveSpeedのsetter
 void AGhost::SetDefaultMoveSpeed(const float speed)
 {
