@@ -37,6 +37,7 @@ protected:
 	float destroyCount; //”j‰ó‚³‚ê‚Ä‚©‚çÁ‚¦‚é‚Ü‚Å‚ÌƒJƒEƒ“ƒg
 
 public:
+	ABreakableActor();
 
 	UFUNCTION(BlueprintPure)
 	bool CheckBreaked();

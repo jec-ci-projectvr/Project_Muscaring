@@ -6,6 +6,14 @@
 TArray<ABreakableActor*> ABreakableActor::breakableActors;
 TArray<UGeometryCollectionComponent*> ABreakableActor::geometryCollectionComponents;
 
+ABreakableActor::ABreakableActor()
+{
+	PrimaryActorTick.bCanEverTick = false;
+	this->GetComponentByClass<UGeometryCollectionComponent>()->SetCanEverAffectNavigation(false);
+
+	destroyCount = 2.0f;
+}
+
 void ABreakableActor::BeginPlay()
 {
 	isBreaked = false;
