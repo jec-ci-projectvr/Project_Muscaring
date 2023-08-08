@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Ghost.h"
 #include "GameFramework/Actor.h"
 #include "RestArea.generated.h"
-
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRestAreaDelegate);
 
@@ -27,8 +27,7 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	virtual void Destroyed() override;
-
+	TArray<TObjectPtr<AActor>> Ghosts;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

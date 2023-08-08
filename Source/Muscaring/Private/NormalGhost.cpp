@@ -39,7 +39,6 @@ void ANormalGhost::BeginPlay()
 	PlayerActionEvent->OnSnapFingers.AddDynamic(this, &ANormalGhost::ListenSnapFingers);
 	PlayerActionEvent->OnFakeOut.AddDynamic(this, &ANormalGhost::ListenFakeOut);
 	GetMostNearRestArea()->onRestAreaDelegate.AddDynamic(this, &ANormalGhost::StepOnRestArea);
-	
 }
 
 // Called every frame
@@ -74,8 +73,6 @@ void ANormalGhost::ChangeState()
 		SetState(GhostState::Swoon);
 	}
 	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
-	//Œ»İ‚ÌscarePoint‚ğ•\¦
-    //UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
 }
 //ó‘Ô‚É‚æ‚Á‚ÄˆÚ“®‘¬“x‚ğ•Ï‰»‚³‚¹‚é
 void ANormalGhost::ChangeMoveSpeed()
@@ -116,6 +113,6 @@ void ANormalGhost::ListenFakeOut()
 	ChangeMoveSpeed();
 }
 void ANormalGhost::StepOnRestArea()
-{
+{	
 	SettingMostNearRestArea();
 }

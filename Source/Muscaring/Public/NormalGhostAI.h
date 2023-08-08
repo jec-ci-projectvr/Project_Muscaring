@@ -11,7 +11,7 @@ UCLASS()
 class MUSCARING_API ANormalGhostAI : public AGhostAI
 {
 	GENERATED_BODY()
-	ANormalGhostAI(const class FObjectInitializer& ObjectInitializer);
+	ANormalGhostAI();
 
 private:
 

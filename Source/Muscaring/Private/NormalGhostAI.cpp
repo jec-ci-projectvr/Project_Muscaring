@@ -8,8 +8,8 @@
 
 
 //コンストラクタ
-ANormalGhostAI::ANormalGhostAI(const class FObjectInitializer& ObjectInitializer)
-	:AGhostAI(ObjectInitializer)
+ANormalGhostAI::ANormalGhostAI()
+	:AGhostAI()
 {
 	//作成したbihaviorTreeを読み込む
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BT(TEXT("/Game/Characters/Ghosts/AI/BT_NormalGhost"));
@@ -39,5 +39,6 @@ void ANormalGhostAI::OnPossess(APawn* InPawn)
 void ANormalGhostAI::OnUnPossess()
 {
 	Super::OnUnPossess();
+	GetBehaviorTreeComp()->StopTree();
 }
 

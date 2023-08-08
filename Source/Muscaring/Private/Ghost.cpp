@@ -11,7 +11,7 @@
 #include "RestArea.h"
 #include "PlayerActionEvent.h"
 AGhost::AGhost()
-	:state_(GhostState::Idle)
+	: state_(GhostState::Idle)
 	, onSeeOnce_(false)
 	, scarePoint_(0)
 	, player_(nullptr)
@@ -29,19 +29,15 @@ AGhost::AGhost()
 	//視野の距離
 	PawnSensingComp->SightRadius = 2000.0f;
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AGhost::OnSeePlayer);
-	//player側のイベントに関数をバインド
-	
+    //聞こえる範囲
+    PawnSensingComp->HearingThreshold = 100.0f;
+    //聞こえる範囲の距離
+    PawnSensingComp->LOSHearingThreshold = 2000.0f;
 }
 // Called when the game starts or when spawned
 void AGhost::BeginPlay()
 {
 	Super::BeginPlay();
-	/*playerActionEvent_->OnSnapFingers.AddDynamic(this, &AGhost::ListenSnapFingers);
-	playerActionEvent_->OnFakeOut.AddDynamic(this, &AGhost::ListenFakeOut);*/
-	////AIコントローラーを設定
-	//{
-	//	ghostAI_ = Cast<ANormalGhostAI>(GetController());
-	//}
 	//プレイヤーの設定
 	{
 		player_ = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
@@ -54,12 +50,7 @@ void AGhost::BeginPlay()
 	}
 	//レベル上に存在する特定のアクターを全て取得
 	{
-
 		SettingMostNearRestArea();
-		IInterfaceGhostState::Execute_SetMostNearRestArea(ghostAI_, mostNearRestArea_);
-		IInterfaceGhostState::Execute_SetSecondNearRestArea(ghostAI_, secondNearRestArea_);
-
-		//mostNearrestArea_->onRestAreaDelegate.AddDynamic(this, &AGhost::StepOnRestArea);
 	}
 }
 
@@ -67,12 +58,16 @@ void AGhost::BeginPlay()
 void AGhost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (test)SettingMostNearRestArea();
 }
 void AGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
-	//OtherActorがプレイヤーだったらinterfaceを実行(playerの判定が無効であるため一時的に条件を無しに)
-	IInterfaceGhostState::Execute_SetHitInfo(ghostAI_, true);
+	//OtherActorがプレイヤーだったらinterfaceを実行
+    if (OtherActor==player_)
+	{
+		IInterfaceGhostState::Execute_SetHitInfo(ghostAI_, true);
+	}
 }
 //動的デリゲートで呼び出す関数
 //プレイヤーを見つけた時に一度だけ呼び出す
@@ -81,7 +76,7 @@ void AGhost::OnSeePlayer(APawn* Pawn)
 	//プレイヤーを見つけた時に一度だけ呼び出す
 	if (!onSeeOnce_)
 	{
-		scarePoint_ += 10;
+		++scarePoint_;
 		ChangeState();
 		ChangeMoveSpeed();
 		IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
@@ -264,6 +259,7 @@ void AGhost::SettingMostNearRestArea()
 			minimumDist = FVector::Distance(GetActorLocation(), restAreaLocation);
 			//Actorとして取得しているため、キャストして変換
 			mostNearRestArea_ = Cast<ARestArea>(loop);
+			IInterfaceGhostState::Execute_SetMostNearRestArea(ghostAI_, mostNearRestArea_);
 		}
 	}
 	//二番目に近いレストエリアを設定
@@ -275,7 +271,6 @@ void AGhost::SettingMostNearRestArea()
 		//一番近いレストエリアと同じものは除外
 		if(mostNearRestArea_==loop)
 		{
-			UKismetSystemLibrary::PrintString(GetWorld(), "exclusive");
 			continue;
 		}
 		else if (minimumDist > FVector::Distance(GetActorLocation(), restAreaLocation))//自身との距離を計測
@@ -284,6 +279,17 @@ void AGhost::SettingMostNearRestArea()
 			minimumDist = FVector::Distance(GetActorLocation(), restAreaLocation);
 			//Actorとして取得しているため、キャストして変換
 			secondNearRestArea_ = Cast<ARestArea>(loop);
+			IInterfaceGhostState::Execute_SetSecondNearRestArea(ghostAI_, secondNearRestArea_);
 		}
 	}
+	
+	
+}
+//レストエリアが破棄されたときの処理
+void AGhost::DestroyedRestArea_Implementation()
+{
+	test = true;
+	//レストエリアを再設定
+	SettingMostNearRestArea();
+	UKismetSystemLibrary::PrintString(GetWorld(), "reset");
 }

@@ -6,13 +6,13 @@
 
 
 //コンストラクタ
-AGhostAI::AGhostAI(const class FObjectInitializer& ObjectInitializer)
+AGhostAI::AGhostAI()
 	:targetKey_("Target"), selfActorKey_("SelfActor"), ghostStateKey_("GhostState")
 	,mostNearRestAreaKey_("RestArea"),secondNearRestAreaKey_("SecondRestArea"), hitKey_("Hit")
 {
 	//AIControllerを作成
-	this->behaviorTreeComp_ = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviorTreeComp"));
-	this->blackboardComp_ = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
+	this->behaviorTreeComp_ = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComp"));
+	this->blackboardComp_ = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
 }
 void AGhostAI::BeginPlay()
 {

@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "NPC.h"
-#include "RestArea.h"
 #include "Enum_GhostState.h"
 #include "PlayerActionEvent.h"
+#include "DestroyedRestArea.h"
 #include "Ghost.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MUSCARING_API AGhost : public ANPC
+class MUSCARING_API AGhost : public ANPC,public IDestroyedRestArea
 {
 	GENERATED_BODY()
 public:
@@ -27,7 +27,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	//éãäEÇÃîÕàÕÇê›íËÇ∑ÇÈ
+	
+	void DestroyedRestArea_Implementation() override;
 public:
 	UPROPERTY(EditAnyWhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
@@ -137,4 +138,7 @@ private:
 
 UPROPERTY(EditAnyWhere)
 	TObjectPtr<UPlayerActionEvent> playerActionEvent_;
+
+UPROPERTY()
+bool test=false;
 };
