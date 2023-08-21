@@ -68,6 +68,10 @@ void AGhostAI::SetGhostState_Implementation(GhostState state)
 }
 void AGhostAI::SetMostNearRestArea_Implementation(ARestArea* restArea)
 {
+	if (restArea == nullptr)
+		UKismetSystemLibrary::PrintString(GetWorld(), "error01");
+	else
+	UKismetSystemLibrary::PrintString(GetWorld(), "SetMostNearRestArea");
 	ensure(this->blackboardComp_);
 	blackboardComp_->SetValueAsObject(mostNearRestAreaKey_, restArea);
 }
@@ -78,6 +82,10 @@ void AGhostAI::SetHitInfo_Implementation(bool hit)
 }
 void AGhostAI::SetSecondNearRestArea_Implementation(ARestArea* restArea)
 {
+	if(restArea==nullptr)
+		UKismetSystemLibrary::PrintString(GetWorld(), "error02");
+	else
+	UKismetSystemLibrary::PrintString(GetWorld(), "SetSecondNearRestArea");
 	ensure(this->blackboardComp_);
 	blackboardComp_->SetValueAsObject(secondNearRestAreaKey_, restArea);
 }

@@ -7,13 +7,14 @@
 #include "Enum_GhostState.h"
 #include "PlayerActionEvent.h"
 #include "DestroyedRestArea.h"
+#include "BeginMoveToPlayer.h"
 #include "Ghost.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MUSCARING_API AGhost : public ANPC,public IDestroyedRestArea
+class MUSCARING_API AGhost : public ANPC,public IDestroyedRestArea,public IBeginMoveToPlayer
 {
 	GENERATED_BODY()
 public:
@@ -27,8 +28,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	
+	//
 	void DestroyedRestArea_Implementation() override;
+
+    void BeginMoveToPlayer_Implementation() override;
 public:
 	UPROPERTY(EditAnyWhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
@@ -137,8 +140,8 @@ private:
 		float escapeMoveSpeed_;
 
 UPROPERTY(EditAnyWhere)
-	TObjectPtr<UPlayerActionEvent> playerActionEvent_;
+	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
 
 UPROPERTY()
-bool test=false;
+bool isBeginMoveToPlayer=false;
 };

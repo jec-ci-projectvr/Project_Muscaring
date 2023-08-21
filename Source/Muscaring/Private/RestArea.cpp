@@ -46,11 +46,8 @@ void ARestArea::NotifyActorBeginOverlap(AActor* OtherActor)
 	Super::NotifyActorBeginOverlap(OtherActor);
 	if (OtherActor == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 	{
-		if (onRestAreaDelegate.IsBound())
-		{
-			UKismetSystemLibrary::PrintString(GetWorld(), TEXT("StepOn"));
-			//オブジェクトの破棄
-			this->Destroy();
-		}
+		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("StepOn"));
+		//オブジェクトの破棄
+		this->Destroy();
 	}
 }

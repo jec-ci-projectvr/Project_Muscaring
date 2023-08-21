@@ -30,14 +30,6 @@ void ANormalGhost::BeginPlay()
 		SetGhostAI(Cast<ANormalGhostAI>(GetController()));
 	}
 	Super::BeginPlay();
-	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
-
-	if (PlayerActionEvent == nullptr) 
-	{
-		UKismetSystemLibrary::PrintString(GetWorld(), "not found event");
-	}
-	PlayerActionEvent->OnSnapFingers.AddDynamic(this, &ANormalGhost::ListenSnapFingers);
-	PlayerActionEvent->OnFakeOut.AddDynamic(this, &ANormalGhost::ListenFakeOut);
 	GetMostNearRestArea()->onRestAreaDelegate.AddDynamic(this, &ANormalGhost::StepOnRestArea);
 }
 
@@ -114,5 +106,4 @@ void ANormalGhost::ListenFakeOut()
 }
 void ANormalGhost::StepOnRestArea()
 {	
-	SettingMostNearRestArea();
 }
