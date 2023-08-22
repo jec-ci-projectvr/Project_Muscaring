@@ -28,17 +28,16 @@ public:
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
 	//視界の範囲を設定する
 public:
-	/*UPROPERTY(EditAnyWhere, Category = "AI")
-		class UPawnSensingComponent* PawnSensingComp;
-	UFUNCTION()
-		virtual void OnSeePlayer(APawn* Pawn);*/
-
 	//scarePointに応じてstateを変更する
 	UFUNCTION()
 	virtual void ChangeState() override;
+	//stateに応じて移動速度を変更する
 	UFUNCTION()
 	void ChangeMoveSpeed() override;
+	//指ポキ音が聞こえた時の処理
 	virtual void ListenSnapFingers() override;
+	//猫だまし音が聞こえた時の処理
 	virtual void ListenFakeOut() override;
+	//休憩所に乗った時の処理
 	virtual void StepOnRestArea() override;
 };

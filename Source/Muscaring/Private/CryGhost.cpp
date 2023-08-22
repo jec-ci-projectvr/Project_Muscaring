@@ -1,56 +1,46 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "NormalGhost.h"
-#include "Kismet/KismetSystemLibrary.h"
-#include "Muscaring/Public/NormalGhostAI.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "InterfaceGhostState.h"
 
-// Sets default values
-ANormalGhost::ANormalGhost()
+#include "CryGhost.h"
+#include "Kismet/GameplayStatics.h"
+#include "InterfaceGhostState.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "CryGhostAI.h"
+
+ACryGhost::ACryGhost() 
 	:AGhost()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	SetDefaultMoveSpeed(60.f);
-	SetEscapeMoveSpeed(90.f);
+	SetEscapeMoveSpeed(120.f);
 }
-
-// Called when the game starts or when spawned
-void ANormalGhost::BeginPlay()
+void ACryGhost::BeginPlay()
 {
 	//AIコントローラーを設定
 	{
-		SetGhostAI(Cast<ANormalGhostAI>(GetController()));
+		SetGhostAI(Cast<ACryGhostAI>(GetController()));
 	}
 	Super::BeginPlay();
-	GetMostNearRestArea()->onRestAreaDelegate.AddDynamic(this, &ANormalGhost::StepOnRestArea);
 }
-
-// Called every frame
-void ANormalGhost::Tick(float DeltaTime)
+void ACryGhost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-void ANormalGhost::NotifyActorBeginOverlap(AActor* OtherActor)
+void ACryGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 }
-
-
-
-//恐怖値に応じて状態を変更する
-void ANormalGhost::ChangeState()
+void ACryGhost::ChangeState()
 {
-	if(GetScarePoint()<30)
+	if (GetScarePoint() < 20)
 	{
 		SetState(GhostState::Approach);
 	}
-	else if(GetScarePoint()<60)
+	else if (GetScarePoint() < 50)
 	{
 		SetState(GhostState::Scare);
 	}
-	else if (GetScarePoint()<100)
+	else if (GetScarePoint() < 100)
 	{
 		SetState(GhostState::Escape);
 	}
@@ -60,19 +50,15 @@ void ANormalGhost::ChangeState()
 	}
 	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
 }
-//状態によって移動速度を変化させる
-void ANormalGhost::ChangeMoveSpeed()
+void ACryGhost::ChangeMoveSpeed()
 {
 	switch (GetState())
 	{
-	case GhostState::Idle:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
-		break;
 	case GhostState::Approach:
 		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed();
 		break;
 	case GhostState::Scare:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed() * 0.8f;
+		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed() * 0.6f;
 		break;
 	case GhostState::Escape:
 		GetCharacterMovement()->MaxWalkSpeed = GetEscapeMoveSpeed();
@@ -84,9 +70,8 @@ void ANormalGhost::ChangeMoveSpeed()
 		break;
 	}
 }
-void ANormalGhost::ListenSnapFingers()
+void ACryGhost::ListenSnapFingers()
 {
-	//behavoorTreeが動いているかどうか
 	if (GetGhostAI()->GetBehaviorTree()->IsValidLowLevel())
 	{
 		SetScarePoint(GetScarePoint() + 3);
@@ -95,13 +80,10 @@ void ANormalGhost::ListenSnapFingers()
 		ChangeMoveSpeed();
 	}
 }
-void ANormalGhost::ListenFakeOut()
+void ACryGhost::ListenFakeOut()
 {
 	SetScarePoint(GetScarePoint() + 10);
 	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
 	ChangeState();
 	ChangeMoveSpeed();
-}
-void ANormalGhost::StepOnRestArea()
-{	
 }

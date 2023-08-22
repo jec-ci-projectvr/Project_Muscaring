@@ -305,7 +305,6 @@ void AGhost::SettingMostNearRestArea()
 				minimumDist = FVector::Distance(GetActorLocation(), restAreaLocation);
 				//Actorとして取得しているため、キャストして変換
 				secondNearRestArea_ = Cast<ARestArea>(loop);
-
 			}
 		}
 	}

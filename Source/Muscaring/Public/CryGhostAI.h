@@ -1,19 +1,20 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
 #pragma once
+
 #include "CoreMinimal.h"
-//#include "AIController.h"
-//#include "BehaviorTree/BehaviorTree.h"
-//#include "BehaviorTree/BehaviorTreeComponent.h"
-//#include "BehaviorTree/BlackboardComponent.h" 
-//#include "NormalGhost.h"
 #include "GhostAI.h"
-#include "NormalGhostAI.generated.h"
+#include "CryGhostAI.generated.h"
+
+/**
+ * 
+ */
 UCLASS()
-class MUSCARING_API ANormalGhostAI : public AGhostAI
+class MUSCARING_API ACryGhostAI : public AGhostAI
 {
 	GENERATED_BODY()
 public:
-	ANormalGhostAI();
-
+	ACryGhostAI();
 private:
 
 	//AIÇÃpawnÇï€éù

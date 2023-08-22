@@ -13,10 +13,12 @@ AGhostAI::AGhostAI()
 	//AIController‚ðì¬
 	this->behaviorTreeComp_ = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComp"));
 	this->blackboardComp_ = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
+	
 }
 void AGhostAI::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
 }
 //Tick
 void AGhostAI::Tick(float DeltaSeconds)

@@ -95,10 +95,10 @@ UFUNCTION()
 	//target‚Ìsetter
 	UFUNCTION()
 		void SetPlayer(APawn* player);
-	//NormalGhostAI‚Ìgetter
+	//GhostAI‚Ìgetter
 	UFUNCTION()
 		AGhostAI* GetGhostAI() const;
-	//NormalGhostAI‚Ìsetter
+	//GhostAI‚Ìsetter
 	UFUNCTION()
 		void SetGhostAI(AGhostAI* ghostAI);
 	//ˆê“x‚Ì‚ÝŽ‹ŠE‚É“ü‚Á‚½‚©‚Ç‚¤‚©‚Ìgetter

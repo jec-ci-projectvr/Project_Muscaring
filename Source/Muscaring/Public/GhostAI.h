@@ -36,6 +36,8 @@ private:
 
 	//blackboardComponentのポインタ
 	TObjectPtr<UBlackboardComponent> blackboardComp_;
+	//PlayerActionEventのポインタ
+	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
 
 	//ターゲットのキー
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
