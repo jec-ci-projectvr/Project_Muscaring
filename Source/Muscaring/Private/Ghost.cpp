@@ -269,7 +269,6 @@ void AGhost::SettingMostNearRestArea()
 			count++;
 			continue;
 		}
-		else
 		{
 			//自身との距離を計測
 			if (minimumDist > FVector::Distance(GetActorLocation(), restAreaLocation))
@@ -292,7 +291,6 @@ void AGhost::SettingMostNearRestArea()
 		{
 			continue;
 		}
-		else
 		{
 			//一番近いレストエリアと同じものは除外
 			if (mostNearRestArea_ == loop)
