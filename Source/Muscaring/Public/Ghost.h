@@ -101,12 +101,6 @@ UFUNCTION()
 	//GhostAI‚Ìsetter
 	UFUNCTION()
 		void SetGhostAI(AGhostAI* ghostAI);
-	//ˆê“x‚Ì‚ÝŽ‹ŠE‚É“ü‚Á‚½‚©‚Ç‚¤‚©‚Ìgetter
-	UFUNCTION()
-		bool GetOnSeeOnce() const;
-	//ˆê“x‚Ì‚ÝŽ‹ŠE‚É“ü‚Á‚½‚©‚Ç‚¤‚©‚Ìsetter
-	UFUNCTION()
-		void SetOnSeeOnce(const bool onSeeOnce);
 
 private:
 	UPROPERTY(EditAnyWhere)

@@ -27,7 +27,7 @@ AGhost::AGhost()
 	//‹–ì
 	PawnSensingComp->SetPeripheralVisionAngle(60.0f);
 	//‹–ì‚Ì‹——£
-	PawnSensingComp->SightRadius = 2000.0f;
+	PawnSensingComp->SightRadius = 5000.0f;
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AGhost::OnSeePlayer);
     //•·‚±‚¦‚é”ÍˆÍ
     PawnSensingComp->HearingThreshold = 100.0f;
@@ -195,16 +195,7 @@ AGhostAI* AGhost::GetGhostAI() const
 {
 	return ghostAI_;
 }
-//onSeeOnce‚Ìsetter
-void AGhost::SetOnSeeOnce(const bool onSeeOnce)
-{
-	onSeeOnce_ = onSeeOnce;
-}
-//onSeeOnce‚Ìgetter
-bool AGhost::GetOnSeeOnce() const
-{
-	return onSeeOnce_;
-}
+
 
 //‹°•|’l‚É‰‚¶‚Äó‘Ô‚ğ•ÏX‚·‚é
 void AGhost::ChangeState()
