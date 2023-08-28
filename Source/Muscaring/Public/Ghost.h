@@ -4,16 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "NPC.h"
-#include "RestArea.h"
 #include "Enum_GhostState.h"
 #include "PlayerActionEvent.h"
+#include "DestroyedRestArea.h"
+#include "BeginMoveToPlayer.h"
 #include "Ghost.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MUSCARING_API AGhost : public ANPC
+class MUSCARING_API AGhost : public ANPC,public IDestroyedRestArea,public IBeginMoveToPlayer
 {
 	GENERATED_BODY()
 public:
@@ -27,7 +28,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	//視界の範囲を設定する
+	//
+	void DestroyedRestArea_Implementation() override;
+
+    void BeginMoveToPlayer_Implementation() override;
 public:
 	UPROPERTY(EditAnyWhere, Category = "AI")
 		class UPawnSensingComponent* PawnSensingComp;
@@ -38,6 +42,8 @@ public:
 		virtual void ListenSnapFingers();
 	UFUNCTION()
 		virtual void ListenFakeOut();
+UFUNCTION()
+    virtual void StepOnRestArea();
 	//scarePointに応じてstateを変更する
 	
 		virtual void ChangeState();
@@ -83,31 +89,18 @@ public:
 //secondNearRestAreaのsetter
     UFUNCTION()
 		void SetSecondNearRestArea(ARestArea* restArea);
-
-	//targetとの最短距離のgetter
-	UFUNCTION()
-		float GetMinimumDist() const;
-	//targetとの最短距離のsetter
-	UFUNCTION()
-		void SetMinimumDist(const float dist);
 	//targetのgetter
 	UFUNCTION()
 		APawn* GetPlayer() const;
 	//targetのsetter
 	UFUNCTION()
 		void SetPlayer(APawn* player);
-	//NormalGhostAIのgetter
+	//GhostAIのgetter
 	UFUNCTION()
 		AGhostAI* GetGhostAI() const;
-	//NormalGhostAIのsetter
+	//GhostAIのsetter
 	UFUNCTION()
 		void SetGhostAI(AGhostAI* ghostAI);
-	//一度のみ視界に入ったかどうかのgetter
-	UFUNCTION()
-		bool GetOnSeeOnce() const;
-	//一度のみ視界に入ったかどうかのsetter
-	UFUNCTION()
-		void SetOnSeeOnce(const bool onSeeOnce);
 
 private:
 	UPROPERTY(EditAnyWhere)
@@ -117,14 +110,11 @@ private:
 		GhostState state_;
 
 	UPROPERTY()
-		TObjectPtr<ARestArea> mostNearrestArea_;//restAreaのポインタ
+		TObjectPtr<ARestArea> mostNearRestArea_;//restAreaのポインタ
 
 	UPROPERTY()
 		TObjectPtr<ARestArea> secondNearRestArea_;//二番目に近いrestAreaのポインタ
 
-	//targetとの最短距離
-	UPROPERTY(EditAnyWhere)
-		float minimumDist_;
 
 	//pawnのポインタ
 	TObjectPtr<APawn> player_;
@@ -144,5 +134,8 @@ private:
 		float escapeMoveSpeed_;
 
 UPROPERTY(EditAnyWhere)
-	TObjectPtr<UPlayerActionEvent> playerActionEvent_;
+	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
+
+UPROPERTY()
+bool isBeginMoveToPlayer=false;
 };

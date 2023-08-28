@@ -6,17 +6,19 @@
 
 
 //コンストラクタ
-AGhostAI::AGhostAI(const class FObjectInitializer& ObjectInitializer)
+AGhostAI::AGhostAI()
 	:targetKey_("Target"), selfActorKey_("SelfActor"), ghostStateKey_("GhostState")
 	,mostNearRestAreaKey_("RestArea"),secondNearRestAreaKey_("SecondRestArea"), hitKey_("Hit")
 {
 	//AIControllerを作成
-	this->behaviorTreeComp_ = ObjectInitializer.CreateDefaultSubobject<UBehaviorTreeComponent>(this, TEXT("BehaviorTreeComp"));
-	this->blackboardComp_ = ObjectInitializer.CreateDefaultSubobject<UBlackboardComponent>(this, TEXT("BlackboardComp"));
+	this->behaviorTreeComp_ = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComp"));
+	this->blackboardComp_ = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComp"));
+	
 }
 void AGhostAI::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
 }
 //Tick
 void AGhostAI::Tick(float DeltaSeconds)
@@ -68,6 +70,10 @@ void AGhostAI::SetGhostState_Implementation(GhostState state)
 }
 void AGhostAI::SetMostNearRestArea_Implementation(ARestArea* restArea)
 {
+	if (restArea == nullptr)
+		UKismetSystemLibrary::PrintString(GetWorld(), "error01");
+	else
+	UKismetSystemLibrary::PrintString(GetWorld(), "SetMostNearRestArea");
 	ensure(this->blackboardComp_);
 	blackboardComp_->SetValueAsObject(mostNearRestAreaKey_, restArea);
 }
@@ -78,6 +84,10 @@ void AGhostAI::SetHitInfo_Implementation(bool hit)
 }
 void AGhostAI::SetSecondNearRestArea_Implementation(ARestArea* restArea)
 {
+	if(restArea==nullptr)
+		UKismetSystemLibrary::PrintString(GetWorld(), "error02");
+	else
+	UKismetSystemLibrary::PrintString(GetWorld(), "SetSecondNearRestArea");
 	ensure(this->blackboardComp_);
 	blackboardComp_->SetValueAsObject(secondNearRestAreaKey_, restArea);
 }

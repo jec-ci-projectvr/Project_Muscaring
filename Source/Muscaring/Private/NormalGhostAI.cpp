@@ -8,8 +8,8 @@
 
 
 //コンストラクタ
-ANormalGhostAI::ANormalGhostAI(const class FObjectInitializer& ObjectInitializer)
-	:AGhostAI(ObjectInitializer)
+ANormalGhostAI::ANormalGhostAI()
+	:AGhostAI()
 {
 	//作成したbihaviorTreeを読み込む
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BT(TEXT("/Game/Characters/Ghosts/AI/BT_NormalGhost"));
@@ -22,7 +22,6 @@ ANormalGhostAI::ANormalGhostAI(const class FObjectInitializer& ObjectInitializer
 void ANormalGhostAI::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
 
 }
 //Tick
@@ -39,5 +38,6 @@ void ANormalGhostAI::OnPossess(APawn* InPawn)
 void ANormalGhostAI::OnUnPossess()
 {
 	Super::OnUnPossess();
+	GetBehaviorTreeComp()->StopTree();
 }
 

@@ -3,9 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Ghost.h"
 #include "GameFramework/Actor.h"
 #include "RestArea.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRestAreaDelegate);
+
+//DECLARE_DYNAMIC_DELEGATE(FOnActorDestroyed)
 
 UCLASS()
 class MUSCARING_API ARestArea : public AActor
@@ -21,10 +25,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	TArray<TObjectPtr<AActor>> Ghosts;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	//overlap begin function
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+
+	FOnRestAreaDelegate onRestAreaDelegate;
 };

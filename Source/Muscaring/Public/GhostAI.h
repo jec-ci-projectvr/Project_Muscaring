@@ -22,7 +22,7 @@ class MUSCARING_API AGhostAI : public AAIController, public IInterfaceGhostState
 	GENERATED_BODY()
 
 public:
-	AGhostAI(const class FObjectInitializer& ObjectInitializer);
+	AGhostAI();
 	void SetGhostState_Implementation(GhostState state) override;
 	void SetMostNearRestArea_Implementation(ARestArea* restArea) override;
 	void SetHitInfo_Implementation(bool hit) override;
@@ -36,6 +36,8 @@ private:
 
 	//blackboardComponentのポインタ
 	TObjectPtr<UBlackboardComponent> blackboardComp_;
+	//PlayerActionEventのポインタ
+	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
 
 	//ターゲットのキー
 	UPROPERTY(EditDefaultsOnly, Category = "AI")

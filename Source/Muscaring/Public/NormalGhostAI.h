@@ -1,17 +1,18 @@
 #pragma once
 #include "CoreMinimal.h"
-#include "AIController.h"
-#include "BehaviorTree/BehaviorTree.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BehaviorTree/BlackboardComponent.h" 
-#include "NormalGhost.h"
+//#include "AIController.h"
+//#include "BehaviorTree/BehaviorTree.h"
+//#include "BehaviorTree/BehaviorTreeComponent.h"
+//#include "BehaviorTree/BlackboardComponent.h" 
+//#include "NormalGhost.h"
 #include "GhostAI.h"
 #include "NormalGhostAI.generated.h"
 UCLASS()
 class MUSCARING_API ANormalGhostAI : public AGhostAI
 {
 	GENERATED_BODY()
-	ANormalGhostAI(const class FObjectInitializer& ObjectInitializer);
+public:
+	ANormalGhostAI();
 
 private:
 
@@ -26,6 +27,4 @@ private:
 
 	//Tick
 	virtual void Tick(float DeltaSeconds) override;
-
-	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
 };

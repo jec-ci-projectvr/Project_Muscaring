@@ -1,17 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "NormalGhost.h"
-#include "PerCeption/PawnSensingComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-
-#include "Muscaring/Muscaring.h"
 #include "Muscaring/Public/NormalGhostAI.h"
-#include "Muscaring/Public/NormalGhost.h"
-#include <Kismet/GameplayStatics.h>
-#include "RestArea.h"
-#include "Enum_GhostState.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "PlayerActionEvent.h"
 #include "InterfaceGhostState.h"
 
 // Sets default values
@@ -20,6 +12,8 @@ ANormalGhost::ANormalGhost()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	SetDefaultMoveSpeed(60.f);
+	SetEscapeMoveSpeed(90.f);
 }
 
 // Called when the game starts or when spawned
@@ -30,15 +24,7 @@ void ANormalGhost::BeginPlay()
 		SetGhostAI(Cast<ANormalGhostAI>(GetController()));
 	}
 	Super::BeginPlay();
-	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
-
-	if (PlayerActionEvent == nullptr) 
-	{
-		UE_LOG(LogTemp, Error, TEXT("PlayerActionEvent is nullptr"));
-		return;
-	}
-	PlayerActionEvent->OnSnapFingers.AddDynamic(this, &ANormalGhost::ListenSnapFingers);
-	PlayerActionEvent->OnFakeOut.AddDynamic(this, &ANormalGhost::ListenFakeOut);
+	GetMostNearRestArea()->onRestAreaDelegate.AddDynamic(this, &ANormalGhost::StepOnRestArea);
 }
 
 // Called every frame
@@ -73,8 +59,6 @@ void ANormalGhost::ChangeState()
 		SetState(GhostState::Swoon);
 	}
 	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
-	//åªç›ÇÃscarePointÇï\é¶
-    //UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
 }
 //èÛë‘Ç…ÇÊÇ¡Çƒà⁄ìÆë¨ìxÇïœâªÇ≥ÇπÇÈ
 void ANormalGhost::ChangeMoveSpeed()
@@ -102,14 +86,12 @@ void ANormalGhost::ChangeMoveSpeed()
 }
 void ANormalGhost::ListenSnapFingers()
 {
-	SetScarePoint(GetScarePoint() + 3);
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-	ChangeState();
-	ChangeMoveSpeed();
+	Super::ListenSnapFingers();
 }
 void ANormalGhost::ListenFakeOut()
 {
-	SetScarePoint(GetScarePoint() + 10);
-	ChangeState();
-	ChangeMoveSpeed();
+	Super::ListenFakeOut();
+}
+void ANormalGhost::StepOnRestArea()
+{	
 }
