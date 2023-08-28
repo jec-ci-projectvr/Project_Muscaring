@@ -30,9 +30,9 @@ AGhost::AGhost()
 	PawnSensingComp->SightRadius = 5000.0f;
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AGhost::OnSeePlayer);
     //聞こえる範囲
-    PawnSensingComp->HearingThreshold = 1000.0f;
+    PawnSensingComp->HearingThreshold = 2000.0f;
     //聞こえる範囲の距離
-    PawnSensingComp->LOSHearingThreshold = 2000.0f;
+    PawnSensingComp->LOSHearingThreshold = 2500.0f;
 }
 // Called when the game starts or when spawned
 void AGhost::BeginPlay()
@@ -79,6 +79,7 @@ void AGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 	//OtherActorがプレイヤーだったらinterfaceを実行
     if (OtherActor==player_)
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), "Hit");
 		IInterfaceGhostState::Execute_SetHitInfo(ghostAI_, true);
 		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
 	}
