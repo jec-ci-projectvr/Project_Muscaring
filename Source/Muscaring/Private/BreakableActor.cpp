@@ -10,6 +10,7 @@ ABreakableActor::ABreakableActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 	this->GetComponentByClass<UGeometryCollectionComponent>()->SetCanEverAffectNavigation(false);
+	this->GeometryCollectionComponent->SetNotifyBreaks(true);
 
 	destroyCount = 2.0f;
 }
@@ -17,8 +18,9 @@ ABreakableActor::ABreakableActor()
 void ABreakableActor::BeginPlay()
 {
 	isBreaked = false;
-	auto g = this->GetComponentByClass<UGeometryCollectionComponent>();
+	auto g = this->GeometryCollectionComponent;
 	g->OnChaosBreakEvent.AddDynamic(this, &ABreakableActor::Break);
+	
 
 	//最初のフレームで自分自身とコンポーネントをスタティック配列に追加する
 	breakableActors.Add(this);
