@@ -86,21 +86,11 @@ void ANormalGhost::ChangeMoveSpeed()
 }
 void ANormalGhost::ListenSnapFingers()
 {
-	//behavoorTree‚ª“®‚¢‚Ä‚¢‚é‚©‚Ç‚¤‚©
-	if (GetGhostAI()->GetBehaviorTree()->IsValidLowLevel())
-	{
-		SetScarePoint(GetScarePoint() + 3);
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
-	}
+	Super::ListenSnapFingers();
 }
 void ANormalGhost::ListenFakeOut()
 {
-	SetScarePoint(GetScarePoint() + 10);
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-	ChangeState();
-	ChangeMoveSpeed();
+	Super::ListenFakeOut();
 }
 void ANormalGhost::StepOnRestArea()
 {	

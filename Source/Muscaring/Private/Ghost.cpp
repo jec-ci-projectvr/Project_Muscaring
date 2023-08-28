@@ -30,7 +30,7 @@ AGhost::AGhost()
 	PawnSensingComp->SightRadius = 5000.0f;
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AGhost::OnSeePlayer);
     //聞こえる範囲
-    PawnSensingComp->HearingThreshold = 100.0f;
+    PawnSensingComp->HearingThreshold = 1000.0f;
     //聞こえる範囲の距離
     PawnSensingComp->LOSHearingThreshold = 2000.0f;
 }
@@ -102,17 +102,35 @@ void AGhost::OnSeePlayer(APawn* Pawn)
 //指ポキイベントで呼び出す
 void AGhost::ListenSnapFingers()
 {
-	//聞こえる範囲であれば実行
+	//プレイヤーとの距離を計測(高さを含まない)
+	const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
+	//聞こえる範囲内であれば実行
+	if (distance <= PawnSensingComp->HearingThreshold)
+	{
+		scarePoint_ += 3;
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+		ChangeState();
+		ChangeMoveSpeed();
+	}
 }
 //猫だましイベントで呼び出す
 void AGhost::ListenFakeOut()
 {
-	//聞こえる範囲であれば実行
+	//プレイヤーとの距離を計測(高さを含まない)
+	const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
+	//聞こえる範囲内であれば実行
+	if (distance <= PawnSensingComp->HearingThreshold)
+	{
+		scarePoint_ += 10;
+		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+		ChangeState();
+		ChangeMoveSpeed();
+	}
 }
 //プレイヤーがrestAreaを踏んだ時に呼び出す
 void AGhost::StepOnRestArea()
 {
-	//SettingMostNearRestArea();
+	
 }
 //defaultMoveSpeedのsetter
 void AGhost::SetDefaultMoveSpeed(const float speed)
@@ -260,7 +278,6 @@ void AGhost::SettingMostNearRestArea()
 			count++;
 			continue;
 		}
-		else
 		{
 			//自身との距離を計測
 			if (minimumDist > FVector::Distance(GetActorLocation(), restAreaLocation))
@@ -283,7 +300,6 @@ void AGhost::SettingMostNearRestArea()
 		{
 			continue;
 		}
-		else
 		{
 			//一番近いレストエリアと同じものは除外
 			if (mostNearRestArea_ == loop)
