@@ -67,10 +67,13 @@ UFUNCTION()
 	//scarePoint‚Ìsetter
 	UFUNCTION()
 		void SetScarePoint(const uint32 scarePoint);
-//Å‚à‹ß‚¢restArea‚ğİ’è‚·‚é
+//Å‚à‹ß‚¢restArea‚Æ“ñ”Ô–Ú‚É‹ß‚¢restArea‚ğİ’è‚·‚é
 	UFUNCTION()
-	void SettingMostNearRestArea();
-	//“ñ”Ô–Ú‚É‹ß‚¢restArea‚ğİ’è‚·‚é
+	    void SettingNearRestArea();
+	//scarePoint‚ğ‰ñ•œ
+	UFUNCTION()
+		virtual void RecoverScarePoint(const uint32 recoveryAmount);
+
 	//state‚Ìsetter
 	UFUNCTION()
 		void SetState(const GhostState state);
@@ -105,6 +108,9 @@ UFUNCTION()
 private:
 	UPROPERTY(EditAnyWhere)
 		uint32 scarePoint_;
+
+	UPROPERTY(EditAnyWhere)
+		uint32 recoverPoint_;
 
 	UPROPERTY(EditAnyWhere)
 		GhostState state_;

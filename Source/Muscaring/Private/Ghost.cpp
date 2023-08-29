@@ -14,10 +14,11 @@ AGhost::AGhost()
 	: state_(GhostState::Idle)
 	, onSeeOnce_(false)
 	, scarePoint_(0)
+	, recoverPoint_(30)
 	, player_(nullptr)
 	, mostNearRestArea_(nullptr)
 	, defaultMoveSpeed_(60.f)
-	, escapeMoveSpeed_(90.f)
+	, escapeMoveSpeed_(150.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -30,9 +31,9 @@ AGhost::AGhost()
 	PawnSensingComp->SightRadius = 5000.0f;
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AGhost::OnSeePlayer);
     //聞こえる範囲
-    PawnSensingComp->HearingThreshold = 1000.0f;
+    PawnSensingComp->HearingThreshold = 2000.0f;
     //聞こえる範囲の距離
-    PawnSensingComp->LOSHearingThreshold = 2000.0f;
+    PawnSensingComp->LOSHearingThreshold = 2500.0f;
 }
 // Called when the game starts or when spawned
 void AGhost::BeginPlay()
@@ -50,24 +51,24 @@ void AGhost::BeginPlay()
 	}
 	//レベル上に存在する特定のアクターを全て取得
 	{
-		SettingMostNearRestArea();
+		SettingNearRestArea();
 	}
 	PlayerActionEvent= Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
 	PlayerActionEvent->OnSnapFingers.AddDynamic(this, &AGhost::ListenSnapFingers);
 	PlayerActionEvent->OnFakeOut.AddDynamic(this, &AGhost::ListenFakeOut);
-	//mostNearRestArea_->onRestAreaDelegate.AddDynamic(this, &AGhost::StepOnRestArea);
 }
 
 // Called every frame
 void AGhost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//自身の前方にプレイヤーがいるかどうか
 	if (isBeginMoveToPlayer)
 	{
+		//自身の前方にプレイヤーがいるかどうか
 		if (FVector::DotProduct(GetActorForwardVector(), player_->GetActorLocation() - GetActorLocation()) > 0)
 		{
-			SettingMostNearRestArea();
+			SettingNearRestArea();
+			ChangeMoveSpeed();
 			isBeginMoveToPlayer = false;
 			UKismetSystemLibrary::PrintString(GetWorld(), "exe");
 		}
@@ -79,8 +80,19 @@ void AGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 	//OtherActorがプレイヤーだったらinterfaceを実行
     if (OtherActor==player_)
 	{
+		UKismetSystemLibrary::PrintString(GetWorld(), "Hit");
 		IInterfaceGhostState::Execute_SetHitInfo(ghostAI_, true);
 		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
+	}
+	//OtherActorがRestAreaだったらscarePointを回復
+	if (OtherActor==secondNearRestArea_)
+	{
+		//逃走状態でのみ処理する
+		if (state_ == GhostState::Escape)
+		{
+			RecoverScarePoint(recoverPoint_);
+			ChangeState();
+		}
 	}
 }
 //動的デリゲートで呼び出す関数
@@ -131,6 +143,11 @@ void AGhost::ListenFakeOut()
 void AGhost::StepOnRestArea()
 {
 	
+}
+
+void AGhost::RecoverScarePoint(uint32 recoverAmount)
+{
+	scarePoint_ -= recoverAmount;
 }
 //defaultMoveSpeedのsetter
 void AGhost::SetDefaultMoveSpeed(const float speed)
@@ -260,7 +277,7 @@ void AGhost::ChangeMoveSpeed()
 	}
 }
 //一番近いレストエリアと二番目に近いレストエリアを設定する
-void AGhost::SettingMostNearRestArea()
+void AGhost::SettingNearRestArea()
 {
 	TArray<AActor*> restAreas;
 	FVector restAreaLocation;

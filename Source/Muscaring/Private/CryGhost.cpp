@@ -12,7 +12,7 @@ ACryGhost::ACryGhost()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	SetDefaultMoveSpeed(60.f);
-	SetEscapeMoveSpeed(120.f);
+	SetEscapeMoveSpeed(150.f);
 }
 void ACryGhost::BeginPlay()
 {
