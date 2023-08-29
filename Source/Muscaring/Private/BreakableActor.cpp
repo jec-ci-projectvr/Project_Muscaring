@@ -9,8 +9,8 @@ TArray<UGeometryCollectionComponent*> ABreakableActor::geometryCollectionCompone
 ABreakableActor::ABreakableActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
-	this->GetComponentByClass<UGeometryCollectionComponent>()->SetCanEverAffectNavigation(false);
 	this->GeometryCollectionComponent->SetNotifyBreaks(true);
+	this->GeometryCollectionComponent->SetCanEverAffectNavigation(false);
 
 	destroyCount = 2.0f;
 }
