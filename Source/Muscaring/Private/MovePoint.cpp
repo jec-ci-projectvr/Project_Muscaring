@@ -52,15 +52,17 @@ void AMovePoint::Tick(float DeltaTime)
 	
 	OnPointArrival.Broadcast(this);
 
-	if (waitPoint && resumeTriggerObject != nullptr)
+	if (waitPoint && IsValid(resumeTriggerObject))
 	{
-		if (IMoveResumeTrigger::Execute_IsResumeTrigger(resumeTriggerObject))
-		{
-			waitPoint = false;
-		}
-	}
+		if (!IMoveResumeTrigger::Execute_IsResumeTrigger(resumeTriggerObject)) return;
 
-	OnPointDeparture.Broadcast(this, nextPoint);
-	this->Destroy();
+		OnPointDeparture.Broadcast(this, nextPoint);
+		this->Destroy();
+		return;
+	}
+	else {
+		OnPointDeparture.Broadcast(this, nextPoint);
+		this->Destroy();
+	}
 }
 
