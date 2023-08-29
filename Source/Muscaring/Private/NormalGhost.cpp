@@ -13,7 +13,7 @@ ANormalGhost::ANormalGhost()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	SetDefaultMoveSpeed(60.f);
-	SetEscapeMoveSpeed(90.f);
+	SetEscapeMoveSpeed(150.f);
 }
 
 // Called when the game starts or when spawned
@@ -24,7 +24,6 @@ void ANormalGhost::BeginPlay()
 		SetGhostAI(Cast<ANormalGhostAI>(GetController()));
 	}
 	Super::BeginPlay();
-	GetMostNearRestArea()->onRestAreaDelegate.AddDynamic(this, &ANormalGhost::StepOnRestArea);
 }
 
 // Called every frame
