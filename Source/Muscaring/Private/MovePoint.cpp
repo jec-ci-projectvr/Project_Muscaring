@@ -34,8 +34,7 @@ void AMovePoint::BeginPlay()
 {
 	if (!displayMesh) staticMesh->DestroyComponent();
 
-	if (targetActor == nullptr)
-	{
+	if (targetActor == nullptr) {
 		targetActor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	}
 
@@ -47,22 +46,37 @@ void AMovePoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (targetDistination != this) return;
-	if (GetDistanceTo(targetActor) > arrivalDistance) return;
+	if (CheckDistance() && !isArrived) {
+		this->Arrival();
+	}
 	
-	OnPointArrival.Broadcast(this);
-
-	if (waitPoint && IsValid(resumeTriggerObject))
-	{
+	if (!isArrived) return;
+	if (waitPoint && IsValid(resumeTriggerObject)) {
 		if (!IMoveResumeTrigger::Execute_IsResumeTrigger(resumeTriggerObject)) return;
-
-		OnPointDeparture.Broadcast(this, nextPoint);
-		this->Destroy();
-		return;
+		this->Departure();
 	}
 	else {
-		OnPointDeparture.Broadcast(this, nextPoint);
-		this->Destroy();
+		this->Departure();
 	}
+}
+
+void AMovePoint::Arrival()
+{
+	OnPointArrival.Broadcast(this);
+}
+
+void AMovePoint::Departure()
+{
+	OnPointDeparture.Broadcast(this, nextPoint);
+	this->Destroy();
+}
+
+bool AMovePoint::CheckDistance()
+{
+	if (targetDistination != this) return false;
+	if (GetDistanceTo(targetActor) > arrivalDistance) return false;
+
+	isArrived = true; 
+	return true;
 }
 

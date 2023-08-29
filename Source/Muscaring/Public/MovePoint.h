@@ -22,6 +22,18 @@ class MUSCARING_API AMovePoint : public AActor
 	// StaticMesh Component
 	TObjectPtr<UStaticMeshComponent> staticMesh;
 
+	//到達済みかどうか
+	bool isArrived;
+
+	//到達したときの処理
+	void Arrival();
+
+	//出発したときの処理
+	void Departure();
+	
+	//ターゲットとの距離をチェック
+	bool CheckDistance();
+
 public:	
 	// Sets default values for this actor's properties
 	AMovePoint();
@@ -33,12 +45,20 @@ public:
 	bool entryPoint;
 
 	//この地点に到達すると一時停止させるか
-	UPROPERTY(EditAnywhere, Category = "Wait")
+	UPROPERTY(EditAnywhere, Category = "Event")
 	bool waitPoint;
 
 	//一時停止を解除するトリガーとなるアクター(IMoveResumeTriggerが実装されたオブジェクトである必要がある)
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "waitPoint"), Category = "Wait")
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "waitPoint"), Category = "Event")
 	TObjectPtr<AActor> resumeTriggerObject;
+
+	//この地点で回転させるか
+	UPROPERTY(EditAnywhere, Category = "Event")
+	bool rotate;
+
+	//この地点で回転させる角度
+	UPROPERTY(EditAnywhere, meta = (EditCondition = "rotate"), Category = "Event")
+	FRotator rotateAngle;
 
 	//到達したと判定する距離
 	UPROPERTY(EditAnywhere, Category = "General")

@@ -27,15 +27,13 @@ void UAutoMove::BeginPlay()
 	for (auto a : actors)
 	{
 		AMovePoint* movePoint = Cast<AMovePoint>(a);
-		if (movePoint->targetActor == parentActor)
-		{
+		if (movePoint->targetActor == parentActor) {
 			movePoints.Add(movePoint);
 		}
 	}
 
 	//Å‰‚ÌMovePoint‚ðŽæ“¾
-	for (auto p : movePoints)
-	{
+	for (auto p : movePoints) {
 		if (p->entryPoint) {
 			distination = p;
 			break;
@@ -43,8 +41,7 @@ void UAutoMove::BeginPlay()
 	}
 
 	//OnArrivalPoint‚ÉƒCƒxƒ“ƒg‚ð“o˜^
-	for (auto p : movePoints)
-	{
+	for (auto p : movePoints) {
 		p->OnPointArrival.AddUObject(this, &UAutoMove::PointArrival);
 		p->OnPointDeparture.AddUObject(this, &UAutoMove::PointDeparture);
 	}
@@ -72,16 +69,14 @@ void UAutoMove::PointArrival(AMovePoint* point)
 
 void UAutoMove::PointDeparture(AMovePoint* point, AMovePoint* next)
 {
-	if (next != nullptr)
-	{
+	if (next != nullptr) {
 		isMoving = true;
 		distination = next;
-		for (auto p : movePoints){
+		for (auto p : movePoints) {
 			p->targetDistination = next;
 		}
 	}
-	else
-	{
+	else {
 		isMoving = false;
 	}
 
