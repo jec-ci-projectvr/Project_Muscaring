@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "MovePointManagerSubSystem.h"
 #include "MoveResumeTrigger.h"
 #include "MovePoint.generated.h"
 
@@ -22,24 +24,6 @@ class MUSCARING_API AMovePoint : public AActor
 	// StaticMesh Component
 	TObjectPtr<UStaticMeshComponent> staticMesh;
 
-	//到達済みかどうか
-	bool isArrived;
-
-	//到達したときの処理
-	void Arrival();
-
-	//出発したときの処理
-	void Departure();
-	
-	//ターゲットとの距離をチェック
-	bool CheckDistance();
-
-public:	
-	// Sets default values for this actor's properties
-	AMovePoint();
-
-	TObjectPtr<AMovePoint> targetDistination;
-
 	//最初に到達するべきポイントか
 	UPROPERTY(EditAnywhere, Category = "Entry")
 	bool entryPoint;
@@ -56,10 +40,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Event")
 	bool rotate;
 
-	//この地点で回転させる角度
-	UPROPERTY(EditAnywhere, meta = (EditCondition = "rotate"), Category = "Event")
-	FRotator rotateAngle;
-
 	//到達したと判定する距離
 	UPROPERTY(EditAnywhere, Category = "General")
 	float arrivalDistance;
@@ -72,9 +52,39 @@ public:
 	UPROPERTY(EditAnywhere, Category = "General")
 	TObjectPtr<AActor> targetActor;
 
-	//ゲーム中にポイントのメッシュを表示させるか
-	UPROPERTY(EditAnywhere, Category = "Visible")
-	bool displayMesh;
+	//到達済みかどうか
+	bool isArrived;
+
+	//MovePointが有効かどうか
+	bool isActive;
+
+	//到達したときの処理
+	void Arrival();
+
+	//出発したときの処理
+	void Departure();
+	
+	//ターゲットとの距離をチェック
+	bool CheckDistance();
+
+	//一時停止を解除するトリガーが有効かどうかチェック
+	bool CheckResumeTrigger();
+
+	bool ActorRotation();
+
+public:	
+	// Sets default values for this actor's properties
+	AMovePoint();
+
+	TObjectPtr<AActor> GetTargetActor() { return targetActor; }
+
+	bool IsEntryPoint() { return entryPoint; }
+
+	bool IsWaitPoint() { return waitPoint; }
+
+	bool IsRotate() { return rotate; }
+
+	void SetActive(bool active) { isActive = active; }
 
 protected:
 	// Called when the game starts or when spawned
