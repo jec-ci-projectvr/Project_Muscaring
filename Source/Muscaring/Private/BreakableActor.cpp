@@ -20,9 +20,7 @@ void ABreakableActor::BeginPlay()
 	g->OnChaosBreakEvent.AddDynamic(this, &ABreakableActor::OnBreak);
 
 	world = GEngine->GameViewport->GetWorld();
-
-	auto gameInst = world->GetGameInstance();
-	auto subSystem = gameInst->GetSubsystem<UBreakableActorManagerSubSystem>();
+	auto subSystem = world->GetSubsystem<UBreakableActorManagerSubSystem>();
 	subSystem->AddBreakableActor(this);
 
 	Super::BeginPlay();

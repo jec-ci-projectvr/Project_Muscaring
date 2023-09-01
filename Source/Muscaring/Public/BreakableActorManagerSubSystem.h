@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "MuscaringWorldSettings.h"
 #include "GeometryCollection/GeometryCollectionActor.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "BreakableActorManagerSubSystem.generated.h"
@@ -12,12 +13,14 @@
  * 
  */
 UCLASS()
-class MUSCARING_API UBreakableActorManagerSubSystem : public UGameInstanceSubsystem
+class MUSCARING_API UBreakableActorManagerSubSystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
 	TArray<AActor*> breakableActors; //breakableActors‚Ì”z—ñ
 
 public:
+
+	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 
 	UFUNCTION(BlueprintCallable)
 	void AddBreakableActor(AActor* actor) { breakableActors.Add(actor); } //”z—ñ‚ÉBreakableActor‚ð’Ç‰Á
