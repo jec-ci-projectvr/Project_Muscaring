@@ -6,7 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "MovePointManagerSubSystem.h"
 #include "MoveResumeTrigger.h"
 #include "MovePoint.generated.h"
 

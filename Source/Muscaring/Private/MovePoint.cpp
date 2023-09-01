@@ -38,10 +38,6 @@ AMovePoint::AMovePoint()
 // Called when the game starts or when spawned
 void AMovePoint::BeginPlay()
 {
-	auto gameInst = GetWorld()->GetGameInstance();
-	auto movePointSub = gameInst->GetSubsystem<UMovePointManagerSubSystem>();
-	movePointSub->AddMovePoint(this);
-
 	if (targetActor == nullptr) {
 		targetActor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	}
