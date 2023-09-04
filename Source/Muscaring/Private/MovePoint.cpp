@@ -86,7 +86,8 @@ bool AMovePoint::CheckDistance()
 
 bool AMovePoint::CheckResumeTrigger()
 {
-	if (!IsValid(resumeTriggerObject)) return true;
+	if (!IsValid(resumeTriggerObject)) return true; //ÄŠJƒgƒŠƒK[‚ªİ’è‚³‚ê‚Ä‚¢‚È‚¢ê‡‚Íí‚Étrue
+	if (!resumeTriggerObject->Implements<UMoveResumeTrigger>()) return true; //IMoveResumeTrigger‚ğÀ‘•‚µ‚Ä‚¢‚È‚¢ê‡‚Íí‚Étrue
 	if (!IMoveResumeTrigger::Execute_IsResumeTrigger(resumeTriggerObject)) return false;
 
 	return true;
