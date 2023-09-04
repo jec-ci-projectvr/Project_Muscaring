@@ -53,6 +53,10 @@
 				"Win64",
 				"Android"
 			]
+		},
+		{
+			"Name": "UE4Duino",
+			"Enabled": true
 		}
 	]
 }
