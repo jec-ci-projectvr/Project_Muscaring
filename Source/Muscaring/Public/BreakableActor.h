@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GeometryCollection/GeometryCollectionActor.h"
-#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "BreakableActorManagerSubSystem.h"
 #include "Chaos/ChaosGameplayEventDispatcher.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -26,6 +25,7 @@ class MUSCARING_API ABreakableActor : public AGeometryCollectionActor, public IM
 
 	UFUNCTION()
 	void DestroyActor(); //アクターの削除
+	
 
 protected:
 
@@ -35,8 +35,12 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float destroyCount; //破壊されてから消えるまでのカウント
 
+
 public:
 	ABreakableActor();
+
+	UFUNCTION(BlueprintCallable)
+	void SetBreaked(bool breaked) { isBreaked = breaked; }
 
 	UFUNCTION(BlueprintPure)
 	bool IsBreaked() { return isBreaked; }

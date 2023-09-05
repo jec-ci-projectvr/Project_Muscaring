@@ -69,8 +69,6 @@ class MUSCARING_API AMovePoint : public AActor
 	//一時停止を解除するトリガーが有効かどうかチェック
 	bool CheckResumeTrigger();
 
-	bool ActorRotation();
-
 public:	
 	// Sets default values for this actor's properties
 	AMovePoint();
