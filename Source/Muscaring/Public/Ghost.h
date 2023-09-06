@@ -8,7 +8,9 @@
 #include "PlayerActionEvent.h"
 #include "DestroyedRestArea.h"
 #include "BeginMoveToPlayer.h"
+#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "Ghost.generated.h"
+
 
 /**
  * 
@@ -28,8 +30,6 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
-	//
-	void DestroyedRestArea_Implementation() override;
 
     void BeginMoveToPlayer_Implementation() override;
 public:
@@ -45,10 +45,14 @@ public:
 UFUNCTION()
     virtual void StepOnRestArea();
 	//scarePointに応じてstateを変更する
-	
 		virtual void ChangeState();
-	
+	//stateに応じて移動速度を変更する
 		virtual void ChangeMoveSpeed();
+	//オバケの表情を変更する
+		virtual void ChangeExpression();
+
+	//オバケの表情を一括で読み込む
+		virtual void LoadAllExpression();
 	UFUNCTION()
 		void SetDefaultMoveSpeed(const float speed);
 	//escapeMoveSpeedのgetter
@@ -104,6 +108,9 @@ UFUNCTION()
 	//GhostAIのsetter
 	UFUNCTION()
 		void SetGhostAI(AGhostAI* ghostAI);
+	//materialsのgetter
+	UFUNCTION()
+		TArray<UMaterial*> GetMaterials() const;
 
 private:
 	UPROPERTY(EditAnyWhere)
@@ -121,13 +128,16 @@ private:
 	UPROPERTY()
 		TObjectPtr<ARestArea> secondNearRestArea_;//二番目に近いrestAreaのポインタ
 
-
+	UPROPERTY(EditAnyWhere)
+		TObjectPtr<ARestArea> endRestArea_;//終着点のrestAreaのポインタ
 	//pawnのポインタ
 	TObjectPtr<APawn> player_;
 
 	//NormalGhostAIのポインタ
 	TObjectPtr<class AGhostAI> ghostAI_;
 
+	//オバケの表情のマテリアルを格納する配列
+	TArray<TObjectPtr<UMaterial>> materials_;
 
 	//一度のみ視界に入ったかどうか
 	UPROPERTY()
@@ -141,6 +151,8 @@ private:
 
 UPROPERTY(EditAnyWhere)
 	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
+UPROPERTY(EditAnyWhere)
+    TObjectPtr<UGeometryCollectionComponent> GeometryCollectionComponent;
 
 UPROPERTY()
 bool isBeginMoveToPlayer=false;

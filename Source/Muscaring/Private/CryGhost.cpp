@@ -13,6 +13,7 @@ ACryGhost::ACryGhost()
 	PrimaryActorTick.bCanEverTick = true;
 	SetDefaultMoveSpeed(60.f);
 	SetEscapeMoveSpeed(150.f);
+	LoadAllExpression();
 }
 void ACryGhost::BeginPlay()
 {
@@ -49,6 +50,7 @@ void ACryGhost::ChangeState()
 		SetState(GhostState::Swoon);
 	}
 	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
+	ChangeExpression();
 }
 void ACryGhost::ChangeMoveSpeed()
 {
@@ -70,20 +72,55 @@ void ACryGhost::ChangeMoveSpeed()
 		break;
 	}
 }
+void ACryGhost::LoadAllExpression()
+{
+	GetMaterials().Push(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GB1")));
+	GetMaterials().Push(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GB2")));
+	GetMaterials().Push(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GB3")));
+}
+void ACryGhost::ChangeExpression()
+{
+	/*switch (GetState())
+	{
+	case GhostState::Idle:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GB1")));
+		break;
+	case GhostState::Approach:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GB1")));
+		break;
+	case GhostState::Scare:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GB2")));
+		break;
+	case GhostState::Escape:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GB3")));
+		break;
+	case GhostState::Swoon:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GB3")));
+		break;
+	default:
+		break;
+	}*/
+	/*switch (GetState())
+	{
+	case GhostState::Approach:
+		GetMesh()->SetMaterial(0, GetMaterials()[0]);
+		break;
+	case GhostState::Scare:
+		GetMesh()->SetMaterial(0, GetMaterials()[1]);
+		break;
+	case GhostState::Escape:
+		GetMesh()->SetMaterial(0, GetMaterials()[2]);
+		break;
+	case GhostState::Swoon:
+		GetMesh()->SetMaterial(0, GetMaterials()[2]);
+		break;
+	}*/
+}
 void ACryGhost::ListenSnapFingers()
 {
-	if (GetGhostAI()->GetBehaviorTree()->IsValidLowLevel())
-	{
-		SetScarePoint(GetScarePoint() + 3);
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
-	}
+	Super::ListenSnapFingers();
 }
 void ACryGhost::ListenFakeOut()
 {
-	SetScarePoint(GetScarePoint() + 10);
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-	ChangeState();
-	ChangeMoveSpeed();
+	Super::ListenFakeOut();
 }

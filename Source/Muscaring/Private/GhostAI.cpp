@@ -8,7 +8,7 @@
 //コンストラクタ
 AGhostAI::AGhostAI()
 	:targetKey_("Target"), selfActorKey_("SelfActor"), ghostStateKey_("GhostState")
-	,mostNearRestAreaKey_("RestArea"),secondNearRestAreaKey_("SecondRestArea"), hitKey_("Hit")
+	,mostNearRestAreaKey_("RestArea"),secondNearRestAreaKey_("SecondRestArea"),endRestAreaKey_("EndRestArea") ,hitKey_("Hit")
 {
 	//AIControllerを作成
 	this->behaviorTreeComp_ = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComp"));
@@ -90,4 +90,9 @@ void AGhostAI::SetSecondNearRestArea_Implementation(ARestArea* restArea)
 	UKismetSystemLibrary::PrintString(GetWorld(), "SetSecondNearRestArea");
 	ensure(this->blackboardComp_);
 	blackboardComp_->SetValueAsObject(secondNearRestAreaKey_, restArea);
+}
+void AGhostAI::SetEndRestArea_Implementation(ARestArea* restArea)
+{
+	ensure(this->blackboardComp_);
+	blackboardComp_->SetValueAsObject(endRestAreaKey_, restArea);
 }

@@ -13,6 +13,7 @@ ANaughtyGhost::ANaughtyGhost()
     PrimaryActorTick.bCanEverTick = true;
 	SetDefaultMoveSpeed(90.f);
 	SetEscapeMoveSpeed(180.f);
+	LoadAllExpression();
 }
 void ANaughtyGhost::BeginPlay()
 {
@@ -49,6 +50,7 @@ void ANaughtyGhost::ChangeState()
 		SetState(GhostState::Swoon);
 	}
 	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
+	ChangeExpression();
 }
 void ANaughtyGhost::ChangeMoveSpeed()
 {
@@ -70,23 +72,40 @@ void ANaughtyGhost::ChangeMoveSpeed()
 		break;
 	}
 }
+void ANaughtyGhost::LoadAllExpression()
+{
+	GetMaterials().Push(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GR1")));
+	GetMaterials().Push(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GR2")));
+	GetMaterials().Push(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GR3")));
+}
+void ANaughtyGhost::ChangeExpression()
+{
+	switch (GetState())
+	{
+	case GhostState::Idle:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GR1")));
+		break;
+	case GhostState::Approach:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GR1")));
+		break;
+	case GhostState::Scare:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GR2")));
+		break;
+	case GhostState::Escape:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GR3")));
+		break;
+	case GhostState::Swoon:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GR3")));
+		break;
+	default:
+		break;
+	}
+}
 void ANaughtyGhost::ListenSnapFingers()
 {
-	if (GetGhostAI()->GetBehaviorTree()->IsValidLowLevel())
-	{
-		SetScarePoint(GetScarePoint() + 3);
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
-	}
+	Super::ListenSnapFingers();
 }
 void ANaughtyGhost::ListenFakeOut()
 {
-	if (GetGhostAI()->GetBehaviorTree()->IsValidLowLevel())
-	{
-		SetScarePoint(GetScarePoint() + 10);
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
-	}
+	Super::ListenFakeOut();
 }
