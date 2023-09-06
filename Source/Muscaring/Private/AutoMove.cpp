@@ -11,6 +11,8 @@ UAutoMove::UAutoMove()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	isMoving = true;
+	isRotating = true;
+	rotationSpeed = 1.0f;
 	// ...
 }
 
@@ -21,71 +23,88 @@ void UAutoMove::BeginPlay()
 	parentActor = GetOwner();
 
 	TArray<AActor*> actors;
+
+	//MovePointを取得
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AMovePoint::StaticClass(), actors);
-
-	//自分をターゲットとしている全てのMovePointを取得
-	for (auto a : actors)
+	for (const auto& p : actors)
 	{
-		AMovePoint* movePoint = Cast<AMovePoint>(a);
-		if (movePoint->targetActor == parentActor)
-		{
-			movePoints.Add(movePoint);
+		TObjectPtr<AMovePoint> point = Cast<AMovePoint>(p);
+
+		if(point->GetTargetActor() != parentActor) continue;
+
+		//イベント登録
+		point->OnPointArrival.AddUObject(this, &UAutoMove::PointArrival);
+		point->OnPointDeparture.AddUObject(this, &UAutoMove::PointDeparture);
+
+		//最初の目的地を設定
+		if (point->IsEntryPoint()) {
+			destination = point;
+			point->SetActive(true);
 		}
-	}
-
-	//最初のMovePointを取得
-	for (auto p : movePoints)
-	{
-		if (p->entryPoint) {
-			distination = p;
-			break;
-		}
-	}
-
-	//OnArrivalPointにイベントを登録
-	for (auto p : movePoints)
-	{
-		p->OnPointArrival.AddUObject(this, &UAutoMove::PointArrival);
-		p->OnPointDeparture.AddUObject(this, &UAutoMove::PointDeparture);
-	}
-
-	for (auto p : movePoints) {
-		p->targetDistination = distination;
 	}
 
 	//PawnからAIControllerを取得
 	controller = Cast<APawn>(parentActor)->GetController();
-	if (controller != nullptr && distination != nullptr) {
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller, distination->GetActorLocation());
+	if (controller != nullptr && destination != nullptr) {
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller, destination->GetActorLocation());
 	}
+
+	world = GEngine->GameViewport->GetWorld();
+
 	Super::BeginPlay();
-	// ...
-	
+
+}
+
+void UAutoMove::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	RotateToDestination();
 }
 
 void UAutoMove::PointArrival(AMovePoint* point)
 {
-	if (point->waitPoint) {
+	if(destination != point) return;
+
+	//一時停止ポイントなら移動を止める
+	if (point->IsWaitPoint()) {
 		isMoving = false;
 	}
 }
 
 void UAutoMove::PointDeparture(AMovePoint* point, AMovePoint* next)
 {
-	if (next != nullptr)
-	{
+	if(destination != point) return;
+
+	//次点を設定する
+	if (next != nullptr) {
 		isMoving = true;
-		distination = next;
-		for (auto p : movePoints){
-			p->targetDistination = next;
-		}
+		destination = next;
 	}
-	else
-	{
+	else {
 		isMoving = false;
+		return;
 	}
 
-	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller, distination->GetActorLocation());
-	movePoints.Remove(point);
+	isRotating = point->IsRotate();
+
+	next->SetActive(true);
+	UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller, destination->GetActorLocation());
+}
+
+void UAutoMove::RotateToDestination()
+{
+	if (!isRotating) return;
+	if (destination == nullptr) return;
+
+	FRotator current = parentActor->GetActorRotation();
+	FRotator target = UKismetMathLibrary::FindLookAtRotation(parentActor->GetActorLocation(), destination->GetActorLocation());
+
+	FRotator result = UKismetMathLibrary::RInterpTo(current, target, world->GetDeltaSeconds(), rotationSpeed);
+
+	//X軸とZ軸は固定
+	result.Roll = 0.0f;
+	result.Pitch = 0.0f;
+
+	isRotating = parentActor->SetActorRotation(result);
+
 }
 
