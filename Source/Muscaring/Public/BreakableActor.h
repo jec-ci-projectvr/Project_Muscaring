@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GeometryCollection/GeometryCollectionActor.h"
-#include "GeometryCollection/GeometryCollectionComponent.h"
+#include "BreakableActorManagerSubSystem.h"
 #include "Chaos/ChaosGameplayEventDispatcher.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "MoveResumeTrigger.h"
@@ -16,17 +16,16 @@ class MUSCARING_API ABreakableActor : public AGeometryCollectionActor, public IM
 	GENERATED_BODY()
 
 	bool isBreaked; //破壊された後か 
-	static TArray<ABreakableActor*> breakableActors; //breakableActorsがすべて入ったスタティック配列
-	static TArray<UGeometryCollectionComponent*> geometryCollectionComponents; //ジオメトリコレクションがすべて入ったスタティック配列
 
 	UWorld* world;
 	FTimerHandle timerHandle;
 
 	UFUNCTION()
-	void Break(const FChaosBreakEvent& breakEvent); //破壊された時に呼ばれる関数
+	void OnBreak(const FChaosBreakEvent& breakEvent); //破壊された時に呼ばれる関数
 
 	UFUNCTION()
-	void DestroyActor();
+	void DestroyActor(); //アクターの削除
+	
 
 protected:
 
@@ -36,17 +35,15 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float destroyCount; //破壊されてから消えるまでのカウント
 
+
 public:
 	ABreakableActor();
 
-	UFUNCTION(BlueprintPure)
-	bool CheckBreaked();
+	UFUNCTION(BlueprintCallable)
+	void SetBreaked(bool breaked) { isBreaked = breaked; }
 
 	UFUNCTION(BlueprintPure)
-	static TArray<ABreakableActor*> GetBreakableActors(); //すべてのBreakableActorsの取得
-
-	UFUNCTION(BlueprintPure)
-	static TArray<UGeometryCollectionComponent*> GetGeometryCollectionComponents(); //すべてのジオメトリコレクションの取得
+	bool IsBreaked() { return isBreaked; }
 
 	bool IsResumeTrigger_Implementation() override;
 

@@ -26,16 +26,19 @@ AMovePoint::AMovePoint()
 
 	staticMesh->SetCanEverAffectNavigation(false);
 
+	this->SetActorHiddenInGame(true);
+
 	arrivalDistance = 100.0f;
+
+	isActive = false;
+
+	rotate = true;
 }
 
 // Called when the game starts or when spawned
 void AMovePoint::BeginPlay()
 {
-	if (!displayMesh) staticMesh->DestroyComponent();
-
-	if (targetActor == nullptr)
-	{
+	if (targetActor == nullptr) {
 		targetActor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	}
 
@@ -47,22 +50,46 @@ void AMovePoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (targetDistination != this) return;
-	if (GetDistanceTo(targetActor) > arrivalDistance) return;
-	
+	if (!isActive) return;
+	if (!CheckDistance()) return;
+
+	this->Arrival();
+
+	//一時停止ポイントの場合、再開トリガーが発動しているか確認
+	if (waitPoint) {
+		if (!CheckResumeTrigger()) return;
+	}
+
+	this->Departure();
+}
+
+void AMovePoint::Arrival()
+{
+	if (isArrived) return;
+	isArrived = true;
 	OnPointArrival.Broadcast(this);
+}
 
-	if (waitPoint && IsValid(resumeTriggerObject))
-	{
-		if (!IMoveResumeTrigger::Execute_IsResumeTrigger(resumeTriggerObject)) return;
+void AMovePoint::Departure()
+{
+	OnPointDeparture.Broadcast(this, nextPoint);
+	this->Destroy();
+}
 
-		OnPointDeparture.Broadcast(this, nextPoint);
-		this->Destroy();
-		return;
-	}
-	else {
-		OnPointDeparture.Broadcast(this, nextPoint);
-		this->Destroy();
-	}
+bool AMovePoint::CheckDistance()
+{
+	if (!IsValid(targetActor)) return false;
+	if (GetDistanceTo(targetActor) > arrivalDistance) return false;
+
+	return true;
+}
+
+bool AMovePoint::CheckResumeTrigger()
+{
+	if (!IsValid(resumeTriggerObject)) return true; //再開トリガーが設定されていない場合は常にtrue
+	if (!resumeTriggerObject->Implements<UMoveResumeTrigger>()) return true; //IMoveResumeTriggerを実装していない場合は常にtrue
+	if (!IMoveResumeTrigger::Execute_IsResumeTrigger(resumeTriggerObject)) return false;
+
+	return true;
 }
 
