@@ -59,8 +59,6 @@ void AGhost::BeginPlay()
 	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
 	PlayerActionEvent->OnSnapFingers.AddDynamic(this, &AGhost::ListenSnapFingers);
 	PlayerActionEvent->OnFakeOut.AddDynamic(this, &AGhost::ListenFakeOut);
-	/*GeometryCollectionComponent = Cast<UGeometryCollectionComponent>(GetComponentByClass(UGeometryCollectionComponent::StaticClass()));
-	GeometryCollectionComponent->OnChaosBreakEvent.AddDynamic(this, &AGhost::ListenFakeOut);*/
 }
 
 // Called every frame
@@ -156,7 +154,9 @@ void AGhost::ListenFakeOut()
 		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
 		ChangeState();
 		ChangeMoveSpeed();
+		IInterfaceGhostState::Execute_SetFakeOut(ghostAI_, true);
 	}
+
 }
 //プレイヤーがrestAreaを踏んだ時に呼び出す
 void AGhost::StepOnRestArea()

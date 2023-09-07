@@ -7,8 +7,8 @@
 
 //コンストラクタ
 AGhostAI::AGhostAI()
-	:targetKey_("Target"), selfActorKey_("SelfActor"), ghostStateKey_("GhostState")
-	,mostNearRestAreaKey_("RestArea"),secondNearRestAreaKey_("SecondRestArea"),endRestAreaKey_("EndRestArea") ,hitKey_("Hit")
+	:targetKey_("Target"), selfActorKey_("SelfActor"), ghostStateKey_("GhostState"),mostNearRestAreaKey_("RestArea")
+	,secondNearRestAreaKey_("SecondRestArea"),endRestAreaKey_("EndRestArea") ,hitKey_("Hit"),FakeOutKey_("FakeOut")
 {
 	//AIControllerを作成
 	this->behaviorTreeComp_ = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComp"));
@@ -95,4 +95,9 @@ void AGhostAI::SetEndRestArea_Implementation(ARestArea* restArea)
 {
 	ensure(this->blackboardComp_);
 	blackboardComp_->SetValueAsObject(endRestAreaKey_, restArea);
+}
+void AGhostAI::SetFakeOut_Implementation(bool isFakeOut)
+{
+	ensure(this->blackboardComp_);
+	blackboardComp_->SetValueAsBool(FakeOutKey_, isFakeOut);
 }

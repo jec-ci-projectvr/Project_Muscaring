@@ -8,7 +8,6 @@
 #include "GameFramework/Character.h"
 #include "Ghost.h"
 #include "PlayerActionEvent.h"
-#include "NormalGhostExpressionUsually.h"
 #include "NormalGhost.generated.h"
 UCLASS()
 class MUSCARING_API ANormalGhost : public AGhost

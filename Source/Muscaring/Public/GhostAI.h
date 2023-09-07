@@ -28,6 +28,7 @@ public:
 	void SetHitInfo_Implementation(bool hit) override;
     void SetSecondNearRestArea_Implementation(ARestArea* restArea) override;
 	void SetEndRestArea_Implementation(ARestArea* restArea) override;
+    void SetFakeOut_Implementation(bool isFakeOut) override;
 	//blackboardのキーを設定する
 	UFUNCTION()
 	void SetPlayerKey(APawn* InPawn);
@@ -62,6 +63,8 @@ private:
 	//playerと接触した情報のキー
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		FName hitKey_;
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+		FName FakeOutKey_;
 protected:
 	//AIのpawnを保持
 	virtual void OnPossess(APawn* InPawn) override;
