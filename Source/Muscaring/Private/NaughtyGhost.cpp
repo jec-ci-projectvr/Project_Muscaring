@@ -49,7 +49,6 @@ void ANaughtyGhost::ChangeState()
 	{
 		SetState(GhostState::Swoon);
 	}
-	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
 	ChangeExpression();
 }
 void ANaughtyGhost::ChangeMoveSpeed()

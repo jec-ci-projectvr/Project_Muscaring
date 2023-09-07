@@ -49,7 +49,6 @@ void ACryGhost::ChangeState()
 	{
 		SetState(GhostState::Swoon);
 	}
-	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
 	ChangeExpression();
 }
 void ACryGhost::ChangeMoveSpeed()

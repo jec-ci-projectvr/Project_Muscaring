@@ -49,7 +49,6 @@ void AFatGhost::ChangeState()
 	{
 		SetState(GhostState::Swoon);
 	}
-	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
 	ChangeExpression();
 }
 void AFatGhost::ChangeMoveSpeed()

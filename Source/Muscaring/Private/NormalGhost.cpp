@@ -60,7 +60,6 @@ void ANormalGhost::ChangeState()
 	{
 		SetState(GhostState::Swoon);
 	}
-	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
 	ChangeExpression();
 }
 //ó‘Ô‚É‚æ‚Á‚ÄˆÚ“®‘¬“x‚ð•Ï‰»‚³‚¹‚é
@@ -91,22 +90,24 @@ void ANormalGhost::ChangeExpression()
 {
 	switch (GetState())
 	{
-	case GhostState::Idle:
-		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN1")));
-		break;
 	case GhostState::Approach:
-		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN1")));
+		//GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN1")));
+		GetMesh()->SetMaterial(0, GetMaterials()[0]);
 		break;
 	case GhostState::Scare:
-		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN2")));
+		//GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN2")));
+		GetMesh()->SetMaterial(0, GetMaterials()[1]);
 		break;
 	case GhostState::Escape:
-		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN3")));
+		//GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN3")));
+		GetMesh()->SetMaterial(0, GetMaterials()[1]);
 		break;
 	case GhostState::Swoon:
-		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN3")));
+		//GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN3")));
+		GetMesh()->SetMaterial(0, GetMaterials()[2]);
 		break;
 	default:
+		GetMesh()->SetMaterial(0, GetMaterials()[0]);
 		break;
 	}
 }

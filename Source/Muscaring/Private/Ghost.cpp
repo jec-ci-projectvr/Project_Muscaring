@@ -24,6 +24,8 @@ AGhost::AGhost()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	materials_.Reserve(3);
+
 	LoadAllExpression();
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 	//Material‚ğİ’è
@@ -275,6 +277,7 @@ void AGhost::ChangeState()
 		state_ = GhostState::Swoon;
 	}
 	ChangeExpression();
+	IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
 }
 //ó‘Ô‚É‚æ‚Á‚ÄˆÚ“®‘¬“x‚ğ•Ï‰»‚³‚¹‚é
 void AGhost::ChangeMoveSpeed()
