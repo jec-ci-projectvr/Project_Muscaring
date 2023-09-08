@@ -11,8 +11,9 @@ ABreakableActor::ABreakableActor()
 	this->GeometryCollectionComponent->SetCollisionObjectType(ECollisionChannel::ECC_Destructible);
 	this->GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
 	this->GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Ignore);
+	this->GeometryCollectionComponent->ObjectType = EObjectStateTypeEnum::Chaos_Object_Sleeping;
 
-	destroyCount = 2.0f;
+	destroyCount = 10.0f;
 }
 
 void ABreakableActor::BeginPlay()
@@ -33,8 +34,6 @@ void ABreakableActor::OnBreak(const FChaosBreakEvent& breakEvent)
 	if(isBreaked) return;
 	isBreaked = true;
 	world->GetTimerManager().SetTimer(timerHandle, this, &ABreakableActor::DestroyActor, destroyCount, false, destroyCount);
-	//printscreen
-	UKismetSystemLibrary::PrintString(world, TEXT("Break"));
 }
 
 bool ABreakableActor::IsResumeTrigger_Implementation()

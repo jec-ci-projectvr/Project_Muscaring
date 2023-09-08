@@ -46,6 +46,9 @@ public:
 	// Sets default values for this component's properties
 	UAutoMove();
 
+	UFUNCTION(BlueprintCallable)
+	bool IsMoving() { return isMoving; }
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
