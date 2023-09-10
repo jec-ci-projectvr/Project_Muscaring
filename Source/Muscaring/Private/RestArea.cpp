@@ -28,25 +28,11 @@ void ARestArea::BeginPlay()
 	}
 }
 
-void ARestArea::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-	for (auto loop : Ghosts)
-	{
-		IDestroyedRestArea::Execute_DestroyedRestArea(loop);
-	}
-    UKismetSystemLibrary::PrintString(GetWorld(), TEXT("EndPlay"));
-}
-// Called every frame
-void ARestArea::Tick(float DeltaTime)
-{
-}
 void ARestArea::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 	if (OtherActor == UGameplayStatics::GetPlayerPawn(GetWorld(), 0))
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("StepOn"));
 		//オブジェクトの破棄
 		this->Destroy();
 	}

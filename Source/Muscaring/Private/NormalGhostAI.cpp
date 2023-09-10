@@ -13,6 +13,7 @@ ANormalGhostAI::ANormalGhostAI()
 {
 	//ì¬‚µ‚½bihaviorTree‚ğ“Ç‚İ‚Ş
 	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BT(TEXT("/Game/Characters/Ghosts/AI/BT_NormalGhost"));
+
 	if (BT.Succeeded())
 	{
 		SetBehaviorTree(BT.Object);
