@@ -10,6 +10,8 @@
 #include "Enum_GhostState.h"
 #include "RestArea.h"
 #include "PlayerActionEvent.h"
+#include "BreakableActor.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 AGhost::AGhost()
 	: state_(GhostState::Idle)
@@ -18,18 +20,15 @@ AGhost::AGhost()
 	, recoverPoint_(30)
 	, player_(nullptr)
 	, mostNearRestArea_(nullptr)
+	, endRestArea_(nullptr)
 	, defaultMoveSpeed_(60.f)
 	, escapeMoveSpeed_(150.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	materials_.Reserve(3);
-
 	LoadAllExpression();
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
-	//Materialを設定
-    //static ConstructorHelpers::FObjectFinder<UMaterial> Material(TEXT("Characters/Ghosts/GN3テクスチャ.uasset"));
 	//視野
 	PawnSensingComp->SetPeripheralVisionAngle(60.0f);
 	//視野の距離
@@ -61,6 +60,15 @@ void AGhost::BeginPlay()
 	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
 	PlayerActionEvent->OnSnapFingers.AddDynamic(this, &AGhost::ListenSnapFingers);
 	PlayerActionEvent->OnFakeOut.AddDynamic(this, &AGhost::ListenFakeOut);
+
+	//全てのBreakableActorを取得し、イベントを登録
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABreakableActor::StaticClass(), FoundActors);
+	for (auto Actor : FoundActors)
+	{
+		auto breakableActor = Cast<ABreakableActor>(Actor);
+		//breakableActor->GetGeometryCollectionComponent()->OnChaosBreakEvent.AddDynamic(this, &AGhost::ListenFakeOut);
+	}
 }
 
 // Called every frame
@@ -89,21 +97,10 @@ void AGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 		IInterfaceGhostState::Execute_SetHitInfo(ghostAI_, true);
 		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
 	}
-	//OtherActorがRestAreaだったら消滅
+	//OtherActorがendRestAreaだったら消滅
 	if (endRestArea_)
 	{
 		if (OtherActor == endRestArea_)
-		{
-			//逃走状態でのみ処理する
-			if (state_ == GhostState::Escape)
-			{
-				Destroy();
-			}
-		}
-	}
-	else
-	{
-		if (OtherActor == secondNearRestArea_)
 		{
 			//逃走状態でのみ処理する
 			if (state_ == GhostState::Escape)
@@ -157,6 +154,7 @@ void AGhost::ListenFakeOut()
 		ChangeState();
 		ChangeMoveSpeed();
 		IInterfaceGhostState::Execute_SetFakeOut(ghostAI_, true);
+		IInterfaceGhostState::Execute_SetGhostState(ghostAI_,state_ );
 	}
 
 }
@@ -303,7 +301,7 @@ void AGhost::ChangeMoveSpeed()
 		break;
 	}
 }
-//
+
 void AGhost::ChangeExpression()
 {
 	switch (state_)
@@ -376,13 +374,22 @@ void AGhost::SettingNearRestArea()
 			}
 		}
 	}
-	//countを表示
+
+	if (endRestArea_!=nullptr)
+	{
+		//endRestAreaが500ｍ以内にあれば逃げる状態にする
+		if (FVector::Distance(GetActorLocation(), endRestArea_->GetActorLocation()) < 500.f)
+		{
+			state_ = GhostState::Escape;
+			IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+		}
+	}
+
 	IInterfaceGhostState::Execute_SetMostNearRestArea(ghostAI_, mostNearRestArea_);
 	IInterfaceGhostState::Execute_SetSecondNearRestArea(ghostAI_, secondNearRestArea_);
 }
 void AGhost::LoadAllExpression()
 {
-
 }
 //オバケがプレイヤーに向かい始めた時の処理
 void AGhost::BeginMoveToPlayer_Implementation()

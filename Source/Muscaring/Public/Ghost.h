@@ -149,9 +149,9 @@ private:
 	UPROPERTY(EditAnyWhere)
 		float escapeMoveSpeed_;
 
-UPROPERTY(EditAnyWhere)
+UPROPERTY()
 	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
-UPROPERTY(EditAnyWhere)
+UPROPERTY()
     TObjectPtr<UGeometryCollectionComponent> GeometryCollectionComponent;
 
 UPROPERTY()
