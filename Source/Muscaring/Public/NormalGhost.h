@@ -30,14 +30,18 @@ public:
 public:
 	//scarePointに応じてstateを変更する
 	UFUNCTION()
-	virtual void ChangeState() override;
+	void ChangeState() override;
 	//stateに応じて移動速度を変更する
 	UFUNCTION()
 	void ChangeMoveSpeed() override;
+	//オバケの表情を変更する
+	void ChangeExpression() override;
+	UFUNCTION()
+	void LoadAllExpression() override;
 	//指ポキ音が聞こえた時の処理
-	virtual void ListenSnapFingers() override;
+	void ListenSnapFingers() override;
 	//猫だまし音が聞こえた時の処理
-	virtual void ListenFakeOut() override;
+	void ListenFakeOut() override;
 	//休憩所に乗った時の処理
-	virtual void StepOnRestArea() override;
+	void StepOnRestArea() override;
 };
