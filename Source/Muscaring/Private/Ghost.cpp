@@ -10,6 +10,9 @@
 #include "Enum_GhostState.h"
 #include "RestArea.h"
 #include "PlayerActionEvent.h"
+#include "BreakableActor.h"
+#include "Kismet/KismetSystemLibrary.h"
+
 AGhost::AGhost()
 	: state_(GhostState::Idle)
 	, onSeeOnce_(false)
@@ -17,14 +20,15 @@ AGhost::AGhost()
 	, recoverPoint_(30)
 	, player_(nullptr)
 	, mostNearRestArea_(nullptr)
+	, endRestArea_(nullptr)
 	, defaultMoveSpeed_(60.f)
 	, escapeMoveSpeed_(150.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	LoadAllExpression();
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
-
 	//視野
 	PawnSensingComp->SetPeripheralVisionAngle(60.0f);
 	//視野の距離
@@ -53,9 +57,18 @@ void AGhost::BeginPlay()
 	{
 		SettingNearRestArea();
 	}
-	PlayerActionEvent= Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
+	PlayerActionEvent = Cast<UPlayerActionEvent>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0)->GetComponentByClass(UPlayerActionEvent::StaticClass()));
 	PlayerActionEvent->OnSnapFingers.AddDynamic(this, &AGhost::ListenSnapFingers);
 	PlayerActionEvent->OnFakeOut.AddDynamic(this, &AGhost::ListenFakeOut);
+
+	//全てのBreakableActorを取得し、イベントを登録
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABreakableActor::StaticClass(), FoundActors);
+	for (auto Actor : FoundActors)
+	{
+		auto breakableActor = Cast<ABreakableActor>(Actor);
+		breakableActor->GetGeometryCollectionComponent()->OnChaosBreakEvent.AddDynamic(this, &AGhost::OnBreak);
+	}
 }
 
 // Called every frame
@@ -84,14 +97,16 @@ void AGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 		IInterfaceGhostState::Execute_SetHitInfo(ghostAI_, true);
 		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
 	}
-	//OtherActorがRestAreaだったらscarePointを回復
-	if (OtherActor==secondNearRestArea_)
+	//OtherActorがendRestAreaだったら消滅
+	if (endRestArea_)
 	{
-		//逃走状態でのみ処理する
-		if (state_ == GhostState::Escape)
+		if (OtherActor == endRestArea_)
 		{
-			RecoverScarePoint(recoverPoint_);
-			ChangeState();
+			//逃走状態でのみ処理する
+			if (state_ == GhostState::Escape)
+			{
+				Destroy();
+			}
 		}
 	}
 }
@@ -106,6 +121,7 @@ void AGhost::OnSeePlayer(APawn* Pawn)
 		ChangeState();
 		ChangeMoveSpeed();
 		IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+		IInterfaceGhostState::Execute_SetEndRestArea(ghostAI_, endRestArea_);
 		onSeeOnce_ = true;
 
 		UKismetSystemLibrary::PrintString(GetWorld(), TEXT("see"));
@@ -117,12 +133,15 @@ void AGhost::ListenSnapFingers()
 	//プレイヤーとの距離を計測(高さを含まない)
 	const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
 	//聞こえる範囲内であれば実行
-	if (distance <= PawnSensingComp->HearingThreshold)
+	if (state_ != GhostState::Idle)
 	{
-		scarePoint_ += 3;
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
+		if (distance <= PawnSensingComp->HearingThreshold)
+		{
+			scarePoint_ += 3;
+			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+			ChangeState();
+			ChangeMoveSpeed();
+		}
 	}
 }
 //猫だましイベントで呼び出す
@@ -131,12 +150,36 @@ void AGhost::ListenFakeOut()
 	//プレイヤーとの距離を計測(高さを含まない)
 	const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
 	//聞こえる範囲内であれば実行
-	if (distance <= PawnSensingComp->HearingThreshold)
+	if (state_ != GhostState::Idle)
 	{
-		scarePoint_ += 10;
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
+		if (distance <= PawnSensingComp->HearingThreshold)
+		{
+			scarePoint_ += 10;
+			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+			ChangeState();
+			ChangeMoveSpeed();
+			IInterfaceGhostState::Execute_SetFakeOut(ghostAI_, true);
+			IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+		}
+	}
+}
+void AGhost::OnBreak(const FChaosBreakEvent& breakEvent)
+{
+	if (Cast<ABreakableActor>(breakEvent.Component->GetOwner())->IsBreaked()) return;
+
+	//プレイヤーとの距離を計測(高さを含まない)
+	const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
+	//聞こえる範囲内であれば実行
+	if (state_ != GhostState::Idle)
+	{
+		if (distance <= PawnSensingComp->HearingThreshold)
+		{
+			scarePoint_ += 5;
+			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+			ChangeState();
+			ChangeMoveSpeed();
+			IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+		}
 	}
 }
 //プレイヤーがrestAreaを踏んだ時に呼び出す
@@ -179,6 +222,17 @@ uint32 AGhost::GetScarePoint() const
 {
 	return scarePoint_;
 }
+//nextMoveSpeedのsetter
+void AGhost::SetNextMoveSpeed(const float speed)
+{
+	nextMoveSpeed_ = speed;
+}
+//nextMoveSpeedのgetter
+float AGhost::GetNextMoveSpeed() const
+{
+	return nextMoveSpeed_;
+}
+
 //stateのsetter
 void AGhost::SetState(const GhostState state)
 {
@@ -230,7 +284,11 @@ AGhostAI* AGhost::GetGhostAI() const
 {
 	return ghostAI_;
 }
-
+//materialsのgetter
+TArray<UMaterial*> AGhost::GetMaterials() const
+{
+	return materials_;
+}
 
 //恐怖値に応じて状態を変更する
 void AGhost::ChangeState()
@@ -251,6 +309,8 @@ void AGhost::ChangeState()
 	{
 		state_ = GhostState::Swoon;
 	}
+	ChangeExpression();
+	IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
 }
 //状態によって移動速度を変化させる
 void AGhost::ChangeMoveSpeed()
@@ -258,21 +318,40 @@ void AGhost::ChangeMoveSpeed()
 	switch (state_)
 	{
 	case GhostState::Idle:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		nextMoveSpeed_= 0.f;
 		break;
 	case GhostState::Approach:
-		GetCharacterMovement()->MaxWalkSpeed = defaultMoveSpeed_;
+		nextMoveSpeed_ = defaultMoveSpeed_;
 		break;
 	case GhostState::Scare:
-		GetCharacterMovement()->MaxWalkSpeed = defaultMoveSpeed_ / 2;
+		nextMoveSpeed_ = defaultMoveSpeed_ / 2;
 		break;
 	case GhostState::Escape:
-		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
+		nextMoveSpeed_ = escapeMoveSpeed_;
 		break;
 	case GhostState::Swoon:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		nextMoveSpeed_ = 0.f;
 		break;
 	default:
+		break;
+	}
+}
+
+void AGhost::ChangeExpression()
+{
+	switch (state_)
+	{
+	case GhostState::Approach:
+		GetMesh()->SetMaterial(0, materials_[0]);
+		break;
+	case GhostState::Scare:
+		GetMesh()->SetMaterial(0, materials_[1]);
+		break;
+	case GhostState::Escape:
+		GetMesh()->SetMaterial(0, materials_[2]);
+		break;
+	case GhostState::Swoon:
+		GetMesh()->SetMaterial(0, materials_[2]);
 		break;
 	}
 }
@@ -283,7 +362,6 @@ void AGhost::SettingNearRestArea()
 	FVector restAreaLocation;
 	float minimumDist = 100000.f;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARestArea::StaticClass(), restAreas);
-	int count = 0;
 	//全てのレストエリアのうち自身の前方にあるレストエリアのみ取得
 	for (TObjectPtr<AActor> loop : restAreas)
 	{
@@ -292,7 +370,6 @@ void AGhost::SettingNearRestArea()
 		//自身の前方にあるレストエリアを除外
 		if (FVector::DotProduct(GetActorForwardVector(), restAreaLocation - GetActorLocation()) > 0)
 		{
-			count++;
 			continue;
 		}
 		{
@@ -332,22 +409,27 @@ void AGhost::SettingNearRestArea()
 			}
 		}
 	}
-	if(mostNearRestArea_==nullptr) UKismetSystemLibrary::PrintString(GetWorld(), "nullptr01");
-	if(secondNearRestArea_==nullptr) UKismetSystemLibrary::PrintString(GetWorld(), "nullptr02");
-	//countを表示
-	UKismetSystemLibrary::PrintString(GetWorld(), FString::FromInt(count));
+
+	if (endRestArea_!=nullptr)
+	{
+		//endRestAreaが500ｍ以内にあれば逃げる状態にする
+		if (FVector::Distance(GetActorLocation(), endRestArea_->GetActorLocation()) < 500.f)
+		{
+			state_ = GhostState::Escape;
+			IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+		}
+	}
+
 	IInterfaceGhostState::Execute_SetMostNearRestArea(ghostAI_, mostNearRestArea_);
 	IInterfaceGhostState::Execute_SetSecondNearRestArea(ghostAI_, secondNearRestArea_);
 }
-//レストエリアが破棄されたときの処理
-void AGhost::DestroyedRestArea_Implementation()
+void AGhost::LoadAllExpression()
 {
-	
 }
 //オバケがプレイヤーに向かい始めた時の処理
 void AGhost::BeginMoveToPlayer_Implementation()
 {
 	isBeginMoveToPlayer = true;
-	//SettingMostNearRestArea();
-	UKismetSystemLibrary::PrintString(GetWorld(), "startMove");
+	//移動速度の更新
+	GetCharacterMovement()->MaxWalkSpeed = nextMoveSpeed_;
 }

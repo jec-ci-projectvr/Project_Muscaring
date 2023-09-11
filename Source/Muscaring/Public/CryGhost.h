@@ -28,8 +28,11 @@ private:
 
 	void ChangeMoveSpeed() override;
 
+	void ChangeExpression() override;
+
+	void LoadAllExpression() override;
+
 	void ListenSnapFingers() override;
 
 	void ListenFakeOut() override;
-
 };

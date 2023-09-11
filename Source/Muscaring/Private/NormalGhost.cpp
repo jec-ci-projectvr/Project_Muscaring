@@ -5,6 +5,7 @@
 #include "Muscaring/Public/NormalGhostAI.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "InterfaceGhostState.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ANormalGhost::ANormalGhost()
@@ -14,11 +15,15 @@ ANormalGhost::ANormalGhost()
 	PrimaryActorTick.bCanEverTick = true;
 	SetDefaultMoveSpeed(60.f);
 	SetEscapeMoveSpeed(150.f);
+	
+	
 }
 
 // Called when the game starts or when spawned
 void ANormalGhost::BeginPlay()
 {
+	LoadAllExpression();
+	ChangeExpression();
 	//AIコントローラーを設定
 	{
 		SetGhostAI(Cast<ANormalGhostAI>(GetController()));
@@ -57,7 +62,11 @@ void ANormalGhost::ChangeState()
 	{
 		SetState(GhostState::Swoon);
 	}
-	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
+	ChangeExpression();
+	if (GetState() == GhostState::Approach || GetState() == GhostState::Scare)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = GetNextMoveSpeed();
+	}
 }
 //状態によって移動速度を変化させる
 void ANormalGhost::ChangeMoveSpeed()
@@ -65,23 +74,54 @@ void ANormalGhost::ChangeMoveSpeed()
 	switch (GetState())
 	{
 	case GhostState::Idle:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		SetNextMoveSpeed(0.f);
 		break;
 	case GhostState::Approach:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed();
+		SetNextMoveSpeed(GetDefaultMoveSpeed());
 		break;
 	case GhostState::Scare:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed() * 0.8f;
+		SetNextMoveSpeed(GetDefaultMoveSpeed() * 0.8f);
 		break;
 	case GhostState::Escape:
-		GetCharacterMovement()->MaxWalkSpeed = GetEscapeMoveSpeed();
+		SetNextMoveSpeed(GetEscapeMoveSpeed());
 		break;
 	case GhostState::Swoon:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		SetNextMoveSpeed(0.f);
 		break;
 	default:
 		break;
 	}
+}
+void ANormalGhost::ChangeExpression()
+{
+	switch (GetState())
+	{
+	case GhostState::Approach:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN1")));
+		//GetMesh()->SetMaterial(0, GetMaterials()[0]);
+		break;
+	case GhostState::Scare:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN2")));
+		//GetMesh()->SetMaterial(0, GetMaterials()[1]);
+		break;
+	case GhostState::Escape:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN3")));
+		//GetMesh()->SetMaterial(0, GetMaterials()[1]);
+		break;
+	case GhostState::Swoon:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN3")));
+		//GetMesh()->SetMaterial(0, GetMaterials()[2]);
+		break;
+	default:
+		//GetMesh()->SetMaterial(0, GetMaterials()[0]);
+		break;
+	}
+}
+void ANormalGhost::LoadAllExpression()
+{
+	GetMaterials().Add(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN1")));
+	GetMaterials().Add(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN2")));
+	GetMaterials().Add(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GN3")));
 }
 void ANormalGhost::ListenSnapFingers()
 {

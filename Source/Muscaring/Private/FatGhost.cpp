@@ -11,8 +11,9 @@ AFatGhost::AFatGhost()
 	:AGhost()
 {
     PrimaryActorTick.bCanEverTick = true;
-	SetDefaultMoveSpeed(40.f);
+	SetDefaultMoveSpeed(50.f);
 	SetEscapeMoveSpeed(120.f);
+	LoadAllExpression();
 }
 void AFatGhost::BeginPlay()
 {
@@ -48,23 +49,55 @@ void AFatGhost::ChangeState()
 	{
 		SetState(GhostState::Swoon);
 	}
-	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
+	ChangeExpression();
 }
 void AFatGhost::ChangeMoveSpeed()
 {
 	switch (GetState())
 	{
+	case GhostState::Idle:
+		SetNextMoveSpeed(0.f);
+		break;
 	case GhostState::Approach:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed();
+		SetNextMoveSpeed(GetDefaultMoveSpeed());
 		break;
 	case GhostState::Scare:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed() * 0.8f;
+		SetNextMoveSpeed(GetDefaultMoveSpeed() * 0.8f);
 		break;
 	case GhostState::Escape:
-		GetCharacterMovement()->MaxWalkSpeed = GetEscapeMoveSpeed();
+		SetNextMoveSpeed(GetEscapeMoveSpeed());
 		break;
 	case GhostState::Swoon:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		SetNextMoveSpeed(0.f);
+		break;
+	default:
+		break;
+	}
+}
+void AFatGhost::LoadAllExpression()
+{
+	GetMaterials().Push(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GY1")));
+	GetMaterials().Push(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GY2")));
+	GetMaterials().Push(LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GY3")));
+}
+void AFatGhost::ChangeExpression()
+{
+	switch (GetState())
+	{
+	case GhostState::Idle:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GY1")));
+		break;
+	case GhostState::Approach:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GY1")));
+		break;
+	case GhostState::Scare:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GY2")));
+		break;
+	case GhostState::Escape:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GY3")));
+		break;
+	case GhostState::Swoon:
+		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GY3")));
 		break;
 	default:
 		break;
@@ -72,21 +105,9 @@ void AFatGhost::ChangeMoveSpeed()
 }
 void AFatGhost::ListenSnapFingers()
 {
-	if (GetGhostAI()->GetBehaviorTree()->IsValidLowLevel())
-	{
-		SetScarePoint(GetScarePoint() + 3);
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
-	}
+	Super::ListenSnapFingers();
 }
 void AFatGhost::ListenFakeOut()
 {
-	if (GetGhostAI()->GetBehaviorTree()->IsValidLowLevel())
-	{
-		SetScarePoint(GetScarePoint() + 10);
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
-	}
+	Super::ListenFakeOut();
 }
