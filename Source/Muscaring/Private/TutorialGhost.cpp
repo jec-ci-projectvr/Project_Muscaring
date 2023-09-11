@@ -28,14 +28,8 @@ void ATutorialGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 }
 void ATutorialGhost::ChangeState()
 {
-	if (GetScarePoint() < 50)
-	{
-		SetState(GhostState::Approach);
-	}
-	else if (GetScarePoint() >= 50)
-	{
+	if (snapFingersFlag && fakeOutFlag)
 		SetState(GhostState::Swoon);
-	}
 	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
 }
 void ATutorialGhost::ChangeMoveSpeed()
@@ -47,13 +41,13 @@ void ATutorialGhost::ChangeMoveSpeed()
 }
 void ATutorialGhost::ListenSnapFingers()
 {
-	SetScarePoint(GetScarePoint() + 10);
+	snapFingersFlag = true;
 	ChangeState();
 	ChangeMoveSpeed();
 }
 void ATutorialGhost::ListenFakeOut()
 {
-	SetScarePoint(GetScarePoint() + 50);
+	fakeOutFlag = true;
 	ChangeState();
 	ChangeMoveSpeed();
 }

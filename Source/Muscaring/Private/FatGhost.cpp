@@ -11,7 +11,7 @@ AFatGhost::AFatGhost()
 	:AGhost()
 {
     PrimaryActorTick.bCanEverTick = true;
-	SetDefaultMoveSpeed(40.f);
+	SetDefaultMoveSpeed(50.f);
 	SetEscapeMoveSpeed(120.f);
 	LoadAllExpression();
 }
@@ -55,17 +55,20 @@ void AFatGhost::ChangeMoveSpeed()
 {
 	switch (GetState())
 	{
+	case GhostState::Idle:
+		SetNextMoveSpeed(0.f);
+		break;
 	case GhostState::Approach:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed();
+		SetNextMoveSpeed(GetDefaultMoveSpeed());
 		break;
 	case GhostState::Scare:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed() * 0.8f;
+		SetNextMoveSpeed(GetDefaultMoveSpeed() * 0.8f);
 		break;
 	case GhostState::Escape:
-		GetCharacterMovement()->MaxWalkSpeed = GetEscapeMoveSpeed();
+		SetNextMoveSpeed(GetEscapeMoveSpeed());
 		break;
 	case GhostState::Swoon:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		SetNextMoveSpeed(0.f);
 		break;
 	default:
 		break;

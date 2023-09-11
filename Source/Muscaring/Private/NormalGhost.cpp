@@ -63,6 +63,10 @@ void ANormalGhost::ChangeState()
 		SetState(GhostState::Swoon);
 	}
 	ChangeExpression();
+	if (GetState() == GhostState::Approach || GetState() == GhostState::Scare)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = GetNextMoveSpeed();
+	}
 }
 //ó‘Ô‚É‚æ‚Á‚ÄˆÚ“®‘¬“x‚ð•Ï‰»‚³‚¹‚é
 void ANormalGhost::ChangeMoveSpeed()
@@ -70,19 +74,19 @@ void ANormalGhost::ChangeMoveSpeed()
 	switch (GetState())
 	{
 	case GhostState::Idle:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		SetNextMoveSpeed(0.f);
 		break;
 	case GhostState::Approach:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed();
+		SetNextMoveSpeed(GetDefaultMoveSpeed());
 		break;
 	case GhostState::Scare:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed() * 0.8f;
+		SetNextMoveSpeed(GetDefaultMoveSpeed() * 0.8f);
 		break;
 	case GhostState::Escape:
-		GetCharacterMovement()->MaxWalkSpeed = GetEscapeMoveSpeed();
+		SetNextMoveSpeed(GetEscapeMoveSpeed());
 		break;
 	case GhostState::Swoon:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		SetNextMoveSpeed(0.f);
 		break;
 	default:
 		break;
