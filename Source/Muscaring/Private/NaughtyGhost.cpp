@@ -55,17 +55,20 @@ void ANaughtyGhost::ChangeMoveSpeed()
 {
 	switch (GetState())
 	{
+	case GhostState::Idle:
+		SetNextMoveSpeed(0.f);
+		break;
 	case GhostState::Approach:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed();
+		SetNextMoveSpeed(GetDefaultMoveSpeed());
 		break;
 	case GhostState::Scare:
-		GetCharacterMovement()->MaxWalkSpeed = GetDefaultMoveSpeed() * 0.8f;
+		SetNextMoveSpeed(GetDefaultMoveSpeed() * 0.8f);
 		break;
 	case GhostState::Escape:
-		GetCharacterMovement()->MaxWalkSpeed = GetEscapeMoveSpeed();
+		SetNextMoveSpeed(GetEscapeMoveSpeed());
 		break;
 	case GhostState::Swoon:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		SetNextMoveSpeed(0.f);
 		break;
 	default:
 		break;

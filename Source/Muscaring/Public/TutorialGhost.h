@@ -30,4 +30,9 @@ private:
 	void ListenSnapFingers() override;
 
 	void ListenFakeOut() override;
+
+	UPROPERTY()
+		bool snapFingersFlag = false;
+	UPROPERTY()
+		bool fakeOutFlag = false;
 };
