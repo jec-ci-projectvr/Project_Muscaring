@@ -33,6 +33,7 @@ void ABreakableActor::OnBreak(const FChaosBreakEvent& breakEvent)
 {
 	if(isBreaked) return;
 	isBreaked = true;
+	UGameplayStatics::PlaySoundAtLocation(world, breakSound, this->GetActorLocation());
 	world->GetTimerManager().SetTimer(timerHandle, this, &ABreakableActor::DestroyActor, destroyCount, false, destroyCount);
 }
 

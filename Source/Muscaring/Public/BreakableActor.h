@@ -7,6 +7,7 @@
 #include "BreakableActorManagerSubSystem.h"
 #include "Chaos/ChaosGameplayEventDispatcher.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "MoveResumeTrigger.h"
 #include "BreakableActor.generated.h"
 
@@ -34,6 +35,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float destroyCount; //”j‰ó‚³‚ê‚Ä‚©‚çÁ‚¦‚é‚Ü‚Å‚ÌƒJƒEƒ“ƒg
+
+	UPROPERTY(EditAnywhere, Category = "Sound")
+	USoundWave* breakSound; //”j‰ó‚³‚ê‚½‚É–Â‚ç‚·‰¹
 
 
 public:
