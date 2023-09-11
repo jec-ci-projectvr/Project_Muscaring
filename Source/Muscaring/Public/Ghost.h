@@ -42,6 +42,8 @@ public:
 		virtual void ListenSnapFingers();
 	UFUNCTION()
 		virtual void ListenFakeOut();
+	UFUNCTION()
+		virtual void OnBreak(const FChaosBreakEvent& breakEvent);
 UFUNCTION()
     virtual void StepOnRestArea();
 	//scarePoint‚É‰‚¶‚Ästate‚ğ•ÏX‚·‚é
@@ -77,6 +79,12 @@ UFUNCTION()
 	//scarePoint‚ğ‰ñ•œ
 	UFUNCTION()
 		virtual void RecoverScarePoint(const uint32 recoveryAmount);
+	//nextMoveSpeed‚Ìgetter
+	UFUNCTION()
+		float GetNextMoveSpeed() const;
+	//nextMoveSpeed‚Ìsetter
+	UFUNCTION()
+		void SetNextMoveSpeed(const float speed);
 
 	//state‚Ìsetter
 	UFUNCTION()
@@ -118,6 +126,8 @@ private:
 
 	UPROPERTY(EditAnyWhere)
 		uint32 recoverPoint_;
+	UPROPERTY()
+		float nextMoveSpeed_;
 
 	UPROPERTY(EditAnyWhere)
 		GhostState state_;

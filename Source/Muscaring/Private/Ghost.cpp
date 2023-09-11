@@ -67,7 +67,7 @@ void AGhost::BeginPlay()
 	for (auto Actor : FoundActors)
 	{
 		auto breakableActor = Cast<ABreakableActor>(Actor);
-		//breakableActor->GetGeometryCollectionComponent()->OnChaosBreakEvent.AddDynamic(this, &AGhost::ListenFakeOut);
+		breakableActor->GetGeometryCollectionComponent()->OnChaosBreakEvent.AddDynamic(this, &AGhost::OnBreak);
 	}
 }
 
@@ -133,12 +133,15 @@ void AGhost::ListenSnapFingers()
 	//プレイヤーとの距離を計測(高さを含まない)
 	const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
 	//聞こえる範囲内であれば実行
-	if (distance <= PawnSensingComp->HearingThreshold)
+	if (state_ != GhostState::Idle)
 	{
-		scarePoint_ += 3;
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
+		if (distance <= PawnSensingComp->HearingThreshold)
+		{
+			scarePoint_ += 3;
+			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+			ChangeState();
+			ChangeMoveSpeed();
+		}
 	}
 }
 //猫だましイベントで呼び出す
@@ -147,16 +150,37 @@ void AGhost::ListenFakeOut()
 	//プレイヤーとの距離を計測(高さを含まない)
 	const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
 	//聞こえる範囲内であれば実行
-	if (distance <= PawnSensingComp->HearingThreshold)
+	if (state_ != GhostState::Idle)
 	{
-		scarePoint_ += 10;
-		UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-		ChangeState();
-		ChangeMoveSpeed();
-		IInterfaceGhostState::Execute_SetFakeOut(ghostAI_, true);
-		IInterfaceGhostState::Execute_SetGhostState(ghostAI_,state_ );
+		if (distance <= PawnSensingComp->HearingThreshold)
+		{
+			scarePoint_ += 10;
+			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+			ChangeState();
+			ChangeMoveSpeed();
+			IInterfaceGhostState::Execute_SetFakeOut(ghostAI_, true);
+			IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+		}
 	}
+}
+void AGhost::OnBreak(const FChaosBreakEvent& breakEvent)
+{
+	if (Cast<ABreakableActor>(breakEvent.Component->GetOwner())->IsBreaked()) return;
 
+	//プレイヤーとの距離を計測(高さを含まない)
+	const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
+	//聞こえる範囲内であれば実行
+	if (state_ != GhostState::Idle)
+	{
+		if (distance <= PawnSensingComp->HearingThreshold)
+		{
+			scarePoint_ += 5;
+			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+			ChangeState();
+			ChangeMoveSpeed();
+			IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+		}
+	}
 }
 //プレイヤーがrestAreaを踏んだ時に呼び出す
 void AGhost::StepOnRestArea()
@@ -198,6 +222,17 @@ uint32 AGhost::GetScarePoint() const
 {
 	return scarePoint_;
 }
+//nextMoveSpeedのsetter
+void AGhost::SetNextMoveSpeed(const float speed)
+{
+	nextMoveSpeed_ = speed;
+}
+//nextMoveSpeedのgetter
+float AGhost::GetNextMoveSpeed() const
+{
+	return nextMoveSpeed_;
+}
+
 //stateのsetter
 void AGhost::SetState(const GhostState state)
 {
@@ -283,19 +318,19 @@ void AGhost::ChangeMoveSpeed()
 	switch (state_)
 	{
 	case GhostState::Idle:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		nextMoveSpeed_= 0.f;
 		break;
 	case GhostState::Approach:
-		GetCharacterMovement()->MaxWalkSpeed = defaultMoveSpeed_;
+		nextMoveSpeed_ = defaultMoveSpeed_;
 		break;
 	case GhostState::Scare:
-		GetCharacterMovement()->MaxWalkSpeed = defaultMoveSpeed_ / 2;
+		nextMoveSpeed_ = defaultMoveSpeed_ / 2;
 		break;
 	case GhostState::Escape:
-		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
+		nextMoveSpeed_ = escapeMoveSpeed_;
 		break;
 	case GhostState::Swoon:
-		GetCharacterMovement()->MaxWalkSpeed = 0.f;
+		nextMoveSpeed_ = 0.f;
 		break;
 	default:
 		break;
@@ -395,4 +430,6 @@ void AGhost::LoadAllExpression()
 void AGhost::BeginMoveToPlayer_Implementation()
 {
 	isBeginMoveToPlayer = true;
+	//移動速度の更新
+	GetCharacterMovement()->MaxWalkSpeed = nextMoveSpeed_;
 }
