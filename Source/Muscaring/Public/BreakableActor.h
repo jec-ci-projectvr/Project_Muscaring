@@ -37,7 +37,7 @@ protected:
 	float destroyCount; //”j‰ó‚³‚ê‚Ä‚©‚çÁ‚¦‚é‚Ü‚Å‚ÌƒJƒEƒ“ƒg
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundWave* breakSound; //”j‰ó‚³‚ê‚½‚É–Â‚ç‚·‰¹
+	USoundBase* breakSound; //”j‰ó‚³‚ê‚½‚É–Â‚ç‚·‰¹
 
 
 public:
