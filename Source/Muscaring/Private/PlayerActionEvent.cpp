@@ -13,3 +13,23 @@ UPlayerActionEvent::UPlayerActionEvent()
 	// ...
 }
 
+void UPlayerActionEvent::BeginPlay()
+{
+	OnSnapFingers.AddDynamic(this, &UPlayerActionEvent::PlaySnapSound);
+	OnFakeOut.AddDynamic(this, &UPlayerActionEvent::PlayFakeOutSound);
+	// ...
+}
+
+void UPlayerActionEvent::PlaySnapSound()
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), snapSound, GetOwner()->GetActorLocation());
+}
+
+void UPlayerActionEvent::PlayFakeOutSound()
+{
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), fakeOutSound, GetOwner()->GetActorLocation());
+}
+
+
+
+

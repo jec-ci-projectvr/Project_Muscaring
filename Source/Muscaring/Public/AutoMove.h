@@ -46,7 +46,7 @@ public:
 	// Sets default values for this component's properties
 	UAutoMove();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	bool IsMoving() { return isMoving; }
 
 protected:

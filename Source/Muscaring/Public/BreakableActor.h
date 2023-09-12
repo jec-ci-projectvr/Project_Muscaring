@@ -36,7 +36,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float destroyCount; //”j‰ó‚³‚ê‚Ä‚©‚çÁ‚¦‚é‚Ü‚Å‚ÌƒJƒEƒ“ƒg
 
-	UPROPERTY(EditAnywhere, Category = "Sound")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Sound")
 	USoundBase* breakSound; //”j‰ó‚³‚ê‚½‚É–Â‚ç‚·‰¹
 
 
