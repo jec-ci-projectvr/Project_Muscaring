@@ -73,6 +73,7 @@ void ACryGhost::ChangeMoveSpeed()
 	default:
 		break;
 	}
+
 }
 void ACryGhost::LoadAllExpression()
 {
@@ -82,7 +83,7 @@ void ACryGhost::LoadAllExpression()
 }
 void ACryGhost::ChangeExpression()
 {
-	/*switch (GetState())
+	switch (GetState())
 	{
 	case GhostState::Idle:
 		GetMesh()->SetMaterial(0, LoadObject<UMaterial>(nullptr, TEXT("/Game/Characters/Ghosts/M_GB1")));
@@ -101,7 +102,7 @@ void ACryGhost::ChangeExpression()
 		break;
 	default:
 		break;
-	}*/
+	}
 	/*switch (GetState())
 	{
 	case GhostState::Approach:
