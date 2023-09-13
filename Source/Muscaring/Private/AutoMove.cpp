@@ -13,6 +13,7 @@ UAutoMove::UAutoMove()
 	isMoving = true;
 	isRotating = true;
 	rotationSpeed = 1.0f;
+
 	// ...
 }
 

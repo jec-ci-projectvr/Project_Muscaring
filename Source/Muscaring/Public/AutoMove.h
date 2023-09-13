@@ -46,7 +46,7 @@ public:
 	// Sets default values for this component's properties
 	UAutoMove();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	bool IsMoving() { return isMoving; }
 
 protected:
@@ -61,5 +61,4 @@ protected:
 	//–Ú“I’n‚ğo”­‚µ‚½‚Æ‚«‚Ìˆ—
 	UFUNCTION()
 	void PointDeparture(AMovePoint* point, AMovePoint* next);
-		
 };
