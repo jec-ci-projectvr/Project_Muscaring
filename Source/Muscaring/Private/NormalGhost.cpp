@@ -13,16 +13,15 @@ ANormalGhost::ANormalGhost()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	SetDefaultMoveSpeed(60.f);
-	SetEscapeMoveSpeed(150.f);
-	
+	SetDefaultMoveSpeed(150.f);
+	SetEscapeMoveSpeed(210.f);
+	LoadAllExpression();
 	
 }
 
 // Called when the game starts or when spawned
 void ANormalGhost::BeginPlay()
 {
-	LoadAllExpression();
 	ChangeExpression();
 	//AIコントローラーを設定
 	{
