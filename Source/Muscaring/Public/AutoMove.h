@@ -61,5 +61,4 @@ protected:
 	//–Ú“I’n‚ğo”­‚µ‚½‚Æ‚«‚Ìˆ—
 	UFUNCTION()
 	void PointDeparture(AMovePoint* point, AMovePoint* next);
-		
 };
