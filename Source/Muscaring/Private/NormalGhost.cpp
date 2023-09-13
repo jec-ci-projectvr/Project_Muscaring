@@ -63,10 +63,6 @@ void ANormalGhost::ChangeState()
 		SetState(GhostState::Swoon);
 	}
 	ChangeExpression();
-	if (GetState() == GhostState::Approach || GetState() == GhostState::Scare)
-	{
-		GetCharacterMovement()->MaxWalkSpeed = GetNextMoveSpeed();
-	}
 }
 //ó‘Ô‚É‚æ‚Á‚ÄˆÚ“®‘¬“x‚ğ•Ï‰»‚³‚¹‚é
 void ANormalGhost::ChangeMoveSpeed()

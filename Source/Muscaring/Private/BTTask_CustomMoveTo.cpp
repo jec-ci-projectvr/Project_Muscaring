@@ -16,8 +16,8 @@ UBTTask_CustomMoveTo::UBTTask_CustomMoveTo()
 }
 EBTNodeResult::Type UBTTask_CustomMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	Super::ExecuteTask(OwnerComp, NodeMemory);
 	IBeginMoveToPlayer::Execute_BeginMoveToPlayer(OwnerComp.GetBlackboardComponent()->GetValueAsObject("SelfActor"));
+	Super::ExecuteTask(OwnerComp, NodeMemory);
 	return EBTNodeResult::InProgress;
 }
 void UBTTask_CustomMoveTo::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
