@@ -7,8 +7,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 ATutorialGhost::ATutorialGhost()
+	:AGhost()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	SetDefaultMoveSpeed(60.f);
+	SetEscapeMoveSpeed(150.f);
 }
 void ATutorialGhost::BeginPlay()
 {
@@ -28,9 +31,14 @@ void ATutorialGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 }
 void ATutorialGhost::ChangeState()
 {
+	if (GetScarePoint() >= 1)
+		SetState(GhostState::Approach);
 	if (snapFingersFlag && fakeOutFlag)
+	{
 		SetState(GhostState::Swoon);
-	IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
+		IInterfaceGhostState::Execute_SetGhostState(GetGhostAI(), GetState());
+		ChangeExpression();
+	}
 }
 void ATutorialGhost::ChangeMoveSpeed()
 {
