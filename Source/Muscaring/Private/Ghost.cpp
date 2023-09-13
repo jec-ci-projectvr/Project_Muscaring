@@ -15,6 +15,7 @@
 
 AGhost::AGhost()
 	: state_(GhostState::Idle)
+	, beforeState_(GhostState::Idle)
 	, onSeeOnce_(false)
 	, scarePoint_(0)
 	, recoverPoint_(30)
@@ -23,9 +24,12 @@ AGhost::AGhost()
 	, endRestArea_(nullptr)
 	, defaultMoveSpeed_(60.f)
 	, escapeMoveSpeed_(150.f)
+	, coolTime_(1.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	GetCharacterMovement()->MaxWalkSpeed = defaultMoveSpeed_;
 
 	LoadAllExpression();
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
@@ -75,6 +79,7 @@ void AGhost::BeginPlay()
 void AGhost::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	nowTime_ = GetWorld()->GetTimeSeconds();
 	if (isBeginMoveToPlayer)
 	{
 		//自身の前方にプレイヤーがいるかどうか
@@ -82,6 +87,9 @@ void AGhost::Tick(float DeltaTime)
 		{
 			SettingNearRestArea();
 			ChangeMoveSpeed();
+			//移動速度の更新
+			GetCharacterMovement()->MaxWalkSpeed = nextMoveSpeed_;
+
 			isBeginMoveToPlayer = false;
 			UKismetSystemLibrary::PrintString(GetWorld(), "exe");
 		}
@@ -96,6 +104,7 @@ void AGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 		UKismetSystemLibrary::PrintString(GetWorld(), "Hit");
 		IInterfaceGhostState::Execute_SetHitInfo(ghostAI_, true);
 		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
+		beforeState_ = state_;
 	}
 	//OtherActorがendRestAreaだったら消滅
 	if (endRestArea_)
@@ -165,21 +174,34 @@ void AGhost::ListenFakeOut()
 }
 void AGhost::OnBreak(const FChaosBreakEvent& breakEvent)
 {
-	if (Cast<ABreakableActor>(breakEvent.Component->GetOwner())->IsBreaked()) return;
-
-	//プレイヤーとの距離を計測(高さを含まない)
-	const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
-	//聞こえる範囲内であれば実行
-	if (state_ != GhostState::Idle)
+	//if (Cast<ABreakableActor>(breakEvent.Component->GetOwner())->IsBreaked()) 
+	
+	//秒単位の時間を取得
+	if (isBreaked_)
 	{
-		if (distance <= PawnSensingComp->HearingThreshold)
+		if (nowTime_ - beforeTime_ > coolTime_)
 		{
-			scarePoint_ += 5;
-			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-			ChangeState();
-			ChangeMoveSpeed();
-			IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+			isBreaked_ = false;
 		}
+	}
+	else
+	{
+		//プレイヤーとの距離を計測(高さを含まない)
+		const float distance = FVector::Dist2D(player_->GetActorLocation(), GetActorLocation());
+		//聞こえる範囲内であれば実行
+		if (state_ != GhostState::Idle)
+		{
+			if (distance <= PawnSensingComp->HearingThreshold)
+			{
+				scarePoint_ += 5;
+				UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+				ChangeState();
+				ChangeMoveSpeed();
+				IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+			}
+		}
+		isBreaked_ = true;
+		beforeTime_ = GetWorld()->GetTimeSeconds();
 	}
 }
 //プレイヤーがrestAreaを踏んだ時に呼び出す
@@ -324,7 +346,7 @@ void AGhost::ChangeMoveSpeed()
 		nextMoveSpeed_ = defaultMoveSpeed_;
 		break;
 	case GhostState::Scare:
-		nextMoveSpeed_ = defaultMoveSpeed_ / 2;
+		nextMoveSpeed_ = defaultMoveSpeed_ * 0.8;
 		break;
 	case GhostState::Escape:
 		nextMoveSpeed_ = escapeMoveSpeed_;
@@ -429,7 +451,6 @@ void AGhost::LoadAllExpression()
 //オバケがプレイヤーに向かい始めた時の処理
 void AGhost::BeginMoveToPlayer_Implementation()
 {
+	if(beforeState_==state_)
 	isBeginMoveToPlayer = true;
-	//移動速度の更新
-	GetCharacterMovement()->MaxWalkSpeed = nextMoveSpeed_;
 }

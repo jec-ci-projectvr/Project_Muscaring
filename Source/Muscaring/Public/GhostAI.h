@@ -64,7 +64,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		FName hitKey_;
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-		FName FakeOutKey_;
+		FName fakeOutKey_;
 protected:
 	//AIÇÃpawnÇï€éù
 	virtual void OnPossess(APawn* InPawn) override;

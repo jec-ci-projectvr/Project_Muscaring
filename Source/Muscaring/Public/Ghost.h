@@ -131,6 +131,9 @@ private:
 
 	UPROPERTY(EditAnyWhere)
 		GhostState state_;
+	//直前のstate
+	UPROPERTY()
+		GhostState beforeState_;
 
 	UPROPERTY()
 		TObjectPtr<ARestArea> mostNearRestArea_;//restAreaのポインタ
@@ -140,6 +143,14 @@ private:
 
 	UPROPERTY(EditAnyWhere)
 		TObjectPtr<ARestArea> endRestArea_;//終着点のrestAreaのポインタ
+	UPROPERTY()
+		float nowTime_;
+	UPROPERTY()
+		float beforeTime_;
+	UPROPERTY()
+		float coolTime_;
+	UPROPERTY()
+		bool isBreaked_;
 	//pawnのポインタ
 	TObjectPtr<APawn> player_;
 
