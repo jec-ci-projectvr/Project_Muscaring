@@ -10,6 +10,7 @@ ABreakableActor::ABreakableActor()
 	this->GeometryCollectionComponent->SetCanEverAffectNavigation(false);
 	this->GeometryCollectionComponent->SetCollisionObjectType(ECollisionChannel::ECC_Destructible);
 	this->GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);
+	this->GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECollisionResponse::ECR_Ignore);
 	this->GeometryCollectionComponent->SetCollisionResponseToChannel(ECC_Destructible, ECollisionResponse::ECR_Ignore);
 	this->GeometryCollectionComponent->ObjectType = EObjectStateTypeEnum::Chaos_Object_Sleeping;
 
