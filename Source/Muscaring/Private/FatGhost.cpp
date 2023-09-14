@@ -11,8 +11,8 @@ AFatGhost::AFatGhost()
 	:AGhost()
 {
     PrimaryActorTick.bCanEverTick = true;
-	SetDefaultMoveSpeed(50.f);
-	SetEscapeMoveSpeed(120.f);
+	SetDefaultMoveSpeed(120.f);
+	SetEscapeMoveSpeed(180.f);
 	LoadAllExpression();
 }
 void AFatGhost::BeginPlay()
