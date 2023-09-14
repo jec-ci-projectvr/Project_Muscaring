@@ -175,7 +175,10 @@ void AGhost::ListenFakeOut()
 void AGhost::OnBreak(const FChaosBreakEvent& breakEvent)
 {
 	//if (Cast<ABreakableActor>(breakEvent.Component->GetOwner())->IsBreaked()) 
-	
+	if (endRestArea_ == nullptr)
+	{
+		Destroy();
+	}
 	//•b’PˆÊ‚ÌŽžŠÔ‚ðŽæ“¾
 	if (isBreaked_)
 	{
@@ -442,6 +445,14 @@ void AGhost::SettingNearRestArea()
 		}
 	}
 
+	if (secondNearRestArea_ == nullptr)
+	{
+		secondNearRestArea_ = endRestArea_;
+	}
+	if (endRestArea_ == nullptr)
+	{
+		Destroy();
+	}
 	IInterfaceGhostState::Execute_SetMostNearRestArea(ghostAI_, mostNearRestArea_);
 	IInterfaceGhostState::Execute_SetSecondNearRestArea(ghostAI_, secondNearRestArea_);
 }
