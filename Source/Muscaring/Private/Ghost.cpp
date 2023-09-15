@@ -196,7 +196,7 @@ void AGhost::OnBreak(const FChaosBreakEvent& breakEvent)
 		{
 			if (distance <= PawnSensingComp->HearingThreshold)
 			{
-				scarePoint_ += 5;
+				scarePoint_ += 20;
 				UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
 				ChangeState();
 				ChangeMoveSpeed();
