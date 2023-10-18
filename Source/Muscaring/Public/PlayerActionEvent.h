@@ -16,10 +16,10 @@ class MUSCARING_API UPlayerActionEvent : public UActorComponent
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundBase* snapSound;
+	USoundBase* snapSound_;
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
-	USoundBase* fakeOutSound;
+	USoundBase* fakeOutSound_;
 
 	UFUNCTION()
 	void PlaySnapSound();

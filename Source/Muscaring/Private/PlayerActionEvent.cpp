@@ -22,12 +22,12 @@ void UPlayerActionEvent::BeginPlay()
 
 void UPlayerActionEvent::PlaySnapSound()
 {
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), snapSound, GetOwner()->GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), snapSound_, GetOwner()->GetActorLocation());
 }
 
 void UPlayerActionEvent::PlayFakeOutSound()
 {
-	UGameplayStatics::PlaySoundAtLocation(GetWorld(), fakeOutSound, GetOwner()->GetActorLocation());
+	UGameplayStatics::PlaySoundAtLocation(GetWorld(), fakeOutSound_, GetOwner()->GetActorLocation());
 }
 
 
