@@ -16,17 +16,17 @@ UCLASS()
 class MUSCARING_API UBreakableActorManagerSubSystem : public UWorldSubsystem
 {
 	GENERATED_BODY()
-	TArray<AActor*> breakableActors; //breakableActorsの配列
+	TArray<AActor*> breakableActors_; //breakableActorsの配列
 
 public:
 
 	virtual bool ShouldCreateSubsystem(UObject* Outer) const override;
 
 	UFUNCTION(BlueprintCallable)
-	void AddBreakableActor(AActor* actor) { breakableActors.Add(actor); } //配列にBreakableActorを追加
+	void AddBreakableActor(AActor* actor) { breakableActors_.Add(actor); } //配列にBreakableActorを追加
 
 	UFUNCTION(BlueprintPure)
-	TArray<AActor*> GetBreakableActors() { return breakableActors; }  //すべてのBreakableActorの取得
+	TArray<AActor*> GetBreakableActors() { return breakableActors_; }  //すべてのBreakableActorの取得
 
 	UFUNCTION(BlueprintPure)
 	TArray<UGeometryCollectionComponent*> GetGeometryCollectionComponents(); //すべてのジオメトリコレクションの取得
