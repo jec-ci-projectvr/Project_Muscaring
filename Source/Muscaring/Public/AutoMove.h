@@ -17,27 +17,27 @@ class MUSCARING_API UAutoMove : public UActorComponent
 {
 	GENERATED_BODY()
 
-	UWorld* world;
+	UWorld* world_;
 
 	//動いているかどうか
-	bool isMoving;
+	bool isMoving_;
 
 	//親アクター
-	TObjectPtr<AActor> parentActor;
+	TObjectPtr<AActor> parentActor_;
 
 	//親アクターのAIコントローラー
-	TObjectPtr<AController> controller;
+	TObjectPtr<AController> controller_;
 
 	//現在の目的地
-	TObjectPtr<AMovePoint> destination;
+	TObjectPtr<AMovePoint> destination_;
 
 
 	//回転中かどうか
-	bool isRotating;
+	bool isRotating_;
 
 	//回転スピード
 	UPROPERTY(EditAnywhere, Category = "Rotate")
-	float rotationSpeed;
+	float rotationSpeed_;
 
 	//目的地に向かって回転させる
 	void RotateToDestination();
@@ -47,7 +47,7 @@ public:
 	UAutoMove();
 
 	UFUNCTION(BlueprintPure)
-	bool IsMoving() { return isMoving; }
+	bool IsMoving() { return isMoving_; }
 
 protected:
 	// Called when the game starts

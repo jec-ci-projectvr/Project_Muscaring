@@ -9,37 +9,37 @@ AMovePoint::AMovePoint()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	defaultSceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
-	RootComponent = defaultSceneRoot;
+	defaultSceneRoot_ = CreateDefaultSubobject<USceneComponent>(TEXT("SceneComponent"));
+	RootComponent = defaultSceneRoot_;
 
-	staticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
+	staticMesh_ = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 
 	UStaticMesh* Mesh = LoadObject<UStaticMesh>(NULL, TEXT("/Engine/BasicShapes/Sphere"), NULL, LOAD_None, NULL);
-	staticMesh->SetStaticMesh(Mesh);
+	staticMesh_->SetStaticMesh(Mesh);
 
 	UMaterial* Material = LoadObject<UMaterial>(NULL, TEXT("/Engine/BasicShapes/BasicShapeMaterial"), NULL, LOAD_None, NULL);
-	staticMesh->SetMaterial(0, Material);
+	staticMesh_->SetMaterial(0, Material);
 
-	staticMesh->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
+	staticMesh_->SetWorldScale3D(FVector(0.1f, 0.1f, 0.1f));
 
-	staticMesh->SetupAttachment(RootComponent);
+	staticMesh_->SetupAttachment(RootComponent);
 
-	staticMesh->SetCanEverAffectNavigation(false);
+	staticMesh_->SetCanEverAffectNavigation(false);
 
 	this->SetActorHiddenInGame(true);
 
-	arrivalDistance = 100.0f;
+	arrivalDistance_ = 100.0f;
 
-	isActive = false;
+	isActive_ = false;
 
-	rotate = true;
+	rotate_ = true;
 }
 
 // Called when the game starts or when spawned
 void AMovePoint::BeginPlay()
 {
-	if (targetActor == nullptr) {
-		targetActor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (targetActor_ == nullptr) {
+		targetActor_ = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	}
 
 	Super::BeginPlay();
@@ -50,13 +50,13 @@ void AMovePoint::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (!isActive) return;
+	if (!isActive_) return;
 	if (!CheckDistance()) return;
 
 	this->Arrival();
 
 	//一時停止ポイントの場合、再開トリガーが発動しているか確認
-	if (waitPoint) {
+	if (waitPoint_) {
 		if (!CheckResumeTrigger()) return;
 	}
 
@@ -65,31 +65,30 @@ void AMovePoint::Tick(float DeltaTime)
 
 void AMovePoint::Arrival()
 {
-	if (isArrived) return;
-	isArrived = true;
+	if (isArrived_) return;
+	isArrived_ = true;
 	OnPointArrival.Broadcast(this);
 }
 
 void AMovePoint::Departure()
 {
-	OnPointDeparture.Broadcast(this, nextPoint);
+	OnPointDeparture.Broadcast(this, nextPoint_);
 	this->Destroy();
 }
 
 bool AMovePoint::CheckDistance()
 {
-	if (!IsValid(targetActor)) return false;
-	if (GetDistanceTo(targetActor) > arrivalDistance) return false;
+	if (!IsValid(targetActor_)) return false;
+	if (GetDistanceTo(targetActor_) > arrivalDistance_) return false;
 
 	return true;
 }
 
 bool AMovePoint::CheckResumeTrigger()
 {
-	if (!IsValid(resumeTriggerObject)) return true; //再開トリガーが設定されていない場合は常にtrue
-	if (!resumeTriggerObject->Implements<UMoveResumeTrigger>()) return true; //IMoveResumeTriggerを実装していない場合は常にtrue
-	if (!IMoveResumeTrigger::Execute_IsResumeTrigger(resumeTriggerObject)) return false;
+	if (!IsValid(resumeTriggerObject_)) return true; //再開トリガーが設定されていない場合は常にtrue
+	if (!resumeTriggerObject_->Implements<UMoveResumeTrigger>()) return true; //IMoveResumeTriggerを実装していない場合は常にtrue
+	if (!IMoveResumeTrigger::Execute_IsResumeTrigger(resumeTriggerObject_)) return false;
 
 	return true;
 }
-

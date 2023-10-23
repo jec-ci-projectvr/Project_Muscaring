@@ -19,12 +19,12 @@ ABreakableActor::ABreakableActor()
 
 void ABreakableActor::BeginPlay()
 {
-	isBreaked = false;
+	isBreaked_ = false;
 	auto g = this->GeometryCollectionComponent;
 	g->OnChaosBreakEvent.AddDynamic(this, &ABreakableActor::OnBreak);
 
-	world = GEngine->GameViewport->GetWorld();
-	auto subSystem = world->GetSubsystem<UBreakableActorManagerSubSystem>();
+	world_ = GEngine->GameViewport->GetWorld();
+	auto subSystem = world_->GetSubsystem<UBreakableActorManagerSubSystem>();
 	subSystem->AddBreakableActor(this);
 
 	Super::BeginPlay();
@@ -32,17 +32,17 @@ void ABreakableActor::BeginPlay()
 
 void ABreakableActor::OnBreak(const FChaosBreakEvent& breakEvent)
 {
-	if(isBreaked) return;
-	isBreaked = true;
-	UGameplayStatics::PlaySoundAtLocation(world, breakSound, breakEvent.Location);
+	if(isBreaked_) return;
+	isBreaked_ = true;
+	UGameplayStatics::PlaySoundAtLocation(world_, breakSound, breakEvent.Location);
 	//printscreen
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Break"));
-	world->GetTimerManager().SetTimer(timerHandle, this, &ABreakableActor::DestroyActor, destroyCount, false, destroyCount);
+	world_->GetTimerManager().SetTimer(timerHandle_, this, &ABreakableActor::DestroyActor, destroyCount, false, destroyCount);
 }
 
 bool ABreakableActor::IsResumeTrigger_Implementation()
 {
-	return isBreaked;
+	return isBreaked_;
 }
 
 void ABreakableActor::DestroyActor()

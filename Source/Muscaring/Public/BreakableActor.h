@@ -16,10 +16,10 @@ class MUSCARING_API ABreakableActor : public AGeometryCollectionActor, public IM
 {
 	GENERATED_BODY()
 
-	bool isBreaked; //îjâÛÇ≥ÇÍÇΩå„Ç© 
+	bool isBreaked_; //îjâÛÇ≥ÇÍÇΩå„Ç© 
 
-	UWorld* world;
-	FTimerHandle timerHandle;
+	UWorld* world_;
+	FTimerHandle timerHandle_;
 
 	UFUNCTION()
 	void OnBreak(const FChaosBreakEvent& breakEvent); //îjâÛÇ≥ÇÍÇΩéûÇ…åƒÇŒÇÍÇÈä÷êî
@@ -44,10 +44,10 @@ public:
 	ABreakableActor();
 
 	UFUNCTION(BlueprintCallable)
-	void SetBreaked(bool breaked) { isBreaked = breaked; }
+	void SetBreaked(bool breaked) { isBreaked_ = breaked; }
 
 	UFUNCTION(BlueprintPure)
-	bool IsBreaked() { return isBreaked; }
+	bool IsBreaked() { return isBreaked_; }
 
 	bool IsResumeTrigger_Implementation() override;
 
