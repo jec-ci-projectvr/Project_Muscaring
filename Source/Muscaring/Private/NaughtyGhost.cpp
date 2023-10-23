@@ -12,7 +12,7 @@ ANaughtyGhost::ANaughtyGhost()
 {
     PrimaryActorTick.bCanEverTick = true;
 	SetDefaultMoveSpeed(180.f);
-	SetEscapeMoveSpeed(240.f);
+	SetEscapeMoveSpeed(360.f);
 	LoadAllExpression();
 }
 void ANaughtyGhost::BeginPlay()

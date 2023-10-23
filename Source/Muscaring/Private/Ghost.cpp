@@ -22,8 +22,8 @@ AGhost::AGhost()
 	, player_(nullptr)
 	, mostNearRestArea_(nullptr)
 	, endRestArea_(nullptr)
-	, defaultMoveSpeed_(60.f)
-	, escapeMoveSpeed_(150.f)
+	, defaultMoveSpeed_(150.f)
+	, escapeMoveSpeed_(300.f)
 	, coolTime_(1.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
@@ -99,22 +99,25 @@ void AGhost::NotifyActorBeginOverlap(AActor* OtherActor)
 {
 	Super::NotifyActorBeginOverlap(OtherActor);
 	//OtherActorがプレイヤーだったらinterfaceを実行
-    if (OtherActor==player_)
+	if (nowTime_ - beforeTime_ > coolTime_)
 	{
-		UKismetSystemLibrary::PrintString(GetWorld(), "Hit");
-		IInterfaceGhostState::Execute_SetHitInfo(ghostAI_, true);
-		GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
-		beforeState_ = state_;
-	}
-	//OtherActorがendRestAreaだったら消滅
-	if (endRestArea_)
-	{
-		if (OtherActor == endRestArea_)
+		if (OtherActor == player_)
 		{
-			//逃走状態でのみ処理する
-			if (state_ == GhostState::Escape)
+			UKismetSystemLibrary::PrintString(GetWorld(), "Hit");
+			IInterfaceGhostState::Execute_SetHitInfo(ghostAI_, true);
+			GetCharacterMovement()->MaxWalkSpeed = escapeMoveSpeed_;
+			beforeState_ = state_;
+		}
+		//OtherActorがendRestAreaだったら消滅
+		if (endRestArea_)
+		{
+			if (OtherActor == endRestArea_)
 			{
-				Destroy();
+				//逃走状態でのみ処理する
+				if (state_ == GhostState::Escape)
+				{
+					Destroy();
+				}
 			}
 		}
 	}
