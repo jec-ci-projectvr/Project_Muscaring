@@ -49,6 +49,9 @@ void UAutoMove::BeginPlay()
 	if (controller_ != nullptr && destination_ != nullptr) {
 		UAIBlueprintHelperLibrary::SimpleMoveToLocation(controller_, destination_->GetActorLocation());
 	}
+	else {
+		isMoving_ = false;
+	}
 
 	world_ = GEngine->GameViewport->GetWorld();
 
