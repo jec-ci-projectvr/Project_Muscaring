@@ -12,7 +12,7 @@ AFatGhost::AFatGhost()
 {
     PrimaryActorTick.bCanEverTick = true;
 	SetDefaultMoveSpeed(120.f);
-	SetEscapeMoveSpeed(180.f);
+	SetEscapeMoveSpeed(240.f);
 	LoadAllExpression();
 }
 void AFatGhost::BeginPlay()
@@ -68,7 +68,7 @@ void AFatGhost::ChangeMoveSpeed()
 		SetNextMoveSpeed(GetEscapeMoveSpeed());
 		break;
 	case GhostState::Swoon:
-		SetNextMoveSpeed(0.f);
+		SetNextMoveSpeed(GetEscapeMoveSpeed());
 		break;
 	default:
 		break;

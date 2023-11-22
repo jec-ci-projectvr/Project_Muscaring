@@ -14,7 +14,7 @@ ANormalGhost::ANormalGhost()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	SetDefaultMoveSpeed(150.f);
-	SetEscapeMoveSpeed(210.f);
+	SetEscapeMoveSpeed(300.f);
 	LoadAllExpression();
 	
 }
