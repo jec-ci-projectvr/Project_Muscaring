@@ -25,7 +25,7 @@ TArray<UGeometryCollectionComponent*> UBreakableActorManagerSubSystem::GetGeomet
 {
 	TArray<UGeometryCollectionComponent*> result;
 
-	for (auto actor : breakableActors)
+	for (auto actor : breakableActors_)
 	{
 		result.Add(actor->GetComponentByClass<UGeometryCollectionComponent>());
 	}
