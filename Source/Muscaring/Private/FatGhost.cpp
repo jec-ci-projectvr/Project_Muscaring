@@ -68,7 +68,7 @@ void AFatGhost::ChangeMoveSpeed()
 		SetNextMoveSpeed(GetEscapeMoveSpeed());
 		break;
 	case GhostState::Swoon:
-		SetNextMoveSpeed(0.f);
+		SetNextMoveSpeed(GetEscapeMoveSpeed());
 		break;
 	default:
 		break;
