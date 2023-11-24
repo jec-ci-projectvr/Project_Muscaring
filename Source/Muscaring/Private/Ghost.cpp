@@ -25,6 +25,7 @@ AGhost::AGhost()
 	, defaultMoveSpeed_(150.f)
 	, escapeMoveSpeed_(300.f)
 	, coolTime_(1.f)
+	, fakeOutCoolTime_(5.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -164,14 +165,18 @@ void AGhost::ListenFakeOut()
 	//ï∑Ç±Ç¶ÇÈîÕàÕì‡Ç≈Ç†ÇÍÇŒé¿çs
 	if (state_ != GhostState::Idle)
 	{
-		if (distance <= PawnSensingComp->HearingThreshold)
+		if (nowTime_ - beforeTime_ > fakeOutCoolTime_)
 		{
-			scarePoint_ += 10;
-			UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
-			ChangeState();
-			ChangeMoveSpeed();
-			IInterfaceGhostState::Execute_SetFakeOut(ghostAI_, true);
-			IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+			if (distance <= PawnSensingComp->HearingThreshold)
+			{
+				scarePoint_ += 10;
+				UKismetSystemLibrary::PrintString(GetWorld(), FString::Printf(TEXT("scarePoint:%d"), GetScarePoint()));
+				ChangeState();
+				ChangeMoveSpeed();
+				IInterfaceGhostState::Execute_SetFakeOut(ghostAI_, true);
+				IInterfaceGhostState::Execute_SetGhostState(ghostAI_, state_);
+				beforeTime_ = GetWorld()->GetTimeSeconds();
+			}
 		}
 	}
 }

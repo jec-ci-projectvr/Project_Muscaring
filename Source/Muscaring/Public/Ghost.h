@@ -149,6 +149,8 @@ private:
 		float beforeTime_;
 	UPROPERTY()
 		float coolTime_;
+	UPROPERTY(EditAnyWhere)
+		float fakeOutCoolTime_;
 	UPROPERTY()
 		bool isBreaked_;
 	//pawn‚Ìƒ|ƒCƒ“ƒ^
@@ -169,7 +171,7 @@ private:
 
 	UPROPERTY(EditAnyWhere)
 		float escapeMoveSpeed_;
-
+	
 UPROPERTY()
 	TObjectPtr<UPlayerActionEvent> PlayerActionEvent;
 UPROPERTY()
